@@ -18,7 +18,6 @@ module.exports = {
 	InfoText: '',
 	BottomInfoHtmlText: '',
 	LoginSignMeType: Enums.LoginSignMeType.DefaultOff, // 0 - off, 1 - on, 2 - don't use
-	UseDropdownLanguagesView: false,
 	
 	/**
 	 * Initializes settings from AppData object sections.
@@ -44,7 +43,6 @@ module.exports = {
 			this.InfoText = Types.pString(oAppDataSection.InfoText, this.InfoText)
 			this.BottomInfoHtmlText = Types.pString(oAppDataSection.BottomInfoHtmlText, this.BottomInfoHtmlText)
 			this.LoginSignMeType = Types.pEnum(oAppDataSection.LoginSignMeType, Enums.LoginSignMeType, this.LoginSignMeType)
-			this.UseDropdownLanguagesView = Types.pBool(oAppDataSection.UseDropdownLanguagesView, this.UseDropdownLanguagesView)
 		}
 		
 		if (!_.isEmpty(oAppDataBrandingWebclientSection))

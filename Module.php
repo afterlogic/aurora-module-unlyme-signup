@@ -66,7 +66,6 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             'BottomInfoHtmlText' => $this->oModuleSettings->BottomInfoHtmlText,
             'LoginSignMeType' => $this->oModuleSettings->LoginSignMeType,
             'AllowChangeLanguage' => $this->oModuleSettings->AllowChangeLanguage,
-            'UseDropdownLanguagesView' => $this->oModuleSettings->UseDropdownLanguagesView,
         );
     }
 

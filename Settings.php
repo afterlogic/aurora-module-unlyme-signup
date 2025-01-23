@@ -20,7 +20,6 @@ use Aurora\System\SettingsProperty;
  * @property string $BottomInfoHtmlText
  * @property int $LoginSignMeType
  * @property bool $AllowChangeLanguage
- * @property bool $UseDropdownLanguagesView
  */
 
 class Settings extends \Aurora\System\Module\Settings
@@ -87,12 +86,6 @@ class Settings extends \Aurora\System\Module\Settings
                 "bool",
                 null,
                 "Enables changing language on login page",
-            ),
-            "UseDropdownLanguagesView" => new SettingsProperty(
-                false,
-                "bool",
-                null,
-                "If true, language selector is presented as a dropdown menu",
             ),
         ];
     }

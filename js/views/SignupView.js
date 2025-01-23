@@ -107,7 +107,6 @@ function CSignupView()
 	this.aLanguages = UserSettings.LanguageList
 	this.currentLanguage = ko.observable(UserSettings.Language)
 	this.bAllowChangeLanguage = Settings.AllowChangeLanguage && !App.isMobile()
-	this.bUseDropdownLanguagesView = Settings.UseDropdownLanguagesView
 
 	this.domains = ko.observableArray([])
 	this.selectedDomain = ko.observable('')
