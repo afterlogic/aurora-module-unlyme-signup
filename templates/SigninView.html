@@ -24,13 +24,35 @@
 						<div class="row login" data-bind="visible: accountType() == Enums.UnlymeAccountType.Personal">
 							<label for="login_login" class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LOGIN'}"></label>
 							<div class="value">
-								<input id="login_login" tabindex="1" class="input username" password type="text" spellcheck="false"
-										data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
-										i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}, initDom: usernameDom" />
-								<select class="input domains" data-bind="visible: domains().length > 1, options: domains, value: selectedDomain"></select>
-								<span class="input domain" data-bind="visible: domains().length === 1">
-									<span data-bind="text: firstDomain"></span>
-								</span>
+								<div class="field">
+									<input id="login_login" tabindex="1" class="input username" password type="text" spellcheck="false"
+											data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
+											i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}, initDom: usernameDom" />
+									<span class="input domain" data-bind="visible: domains().length === 1">
+										<span data-bind="text: firstDomain"></span>
+									</span>
+									<span class="custom_selector domains" data-bind="dropdown: {'control': false}">
+										<span class="name">
+											<span class="icon"></span>
+											<span class="text" data-bind="text: selectedDomain"></span>
+										</span>
+										<!-- <span class="control">
+											<span class="icon"></span>
+										</span> -->
+										<span class="dropdown">
+											<span class="dropdown_helper">
+												<!-- <span class="dropdown_arrow"><span></span></span> -->
+												<span class="dropdown_content" data-bind="foreach: domains">
+													<span class="item" data-bind="css: $parent.selectedDomain() === $data ? ' selected' : '',
+														click: function () { $parent.selectedDomain($data); }">
+														<!-- <span class="icon" data-bind="css: icon"></span> -->
+														<span class="text" data-bind="text: $data"></span>
+													</span>
+												</span>
+											</span>
+										</span>
+									</span>
+								</div>
 							</div>
 						</div>
 

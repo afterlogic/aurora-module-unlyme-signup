@@ -4,35 +4,22 @@
 
 <div class="row login">
 	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LOGIN'}"></label>
-	<div class="value">
-		<input tabindex="1" class="input username" type="text" spellcheck="false"
-				data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
-				i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}" />
-		<span class="input domain">
-			<span data-bind="text: domain()"></span>
-		</span>
+	<div class="value" data-bind="css: {'error': usernameBadError()}">
+		<div class="field">
+			<input tabindex="1" class="input username" type="text" spellcheck="false"
+					data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
+					i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}" />
+			<span class="input domain">
+				<span data-bind="text: domain()"></span>
+			</span>
+		</div>
+		<div class="error_text" data-bind="visible: usernameBadError(), i18n: {'key': '%MODULENAME%/ERROR_EMAIL_ACCOUNT_FORBIDDEN'}"></div>
 	</div>
 </div>
 
 <div data-bind="template: { name: '%ModuleName%_controls_InputPhone', data: $data }"></div>
-
-<div class="row password">
-	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PASSWORD'}"></label>
-	<div class="value">
-		<input tabindex="3" class="input password" type="password" spellcheck="false"
-				data-bind="value: password, hasfocus: passwordFocus, valueUpdate: 'afterkeydown', 
-				i18n: {'key': '%MODULENAME%/PLACEHOLDER_PASSWORD', 'type': 'placeholder'}" />
-	</div>
-</div>
-
-<div class="row password-repeat">
-	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PASSWORD_REPEAT'}"></label>
-	<div class="value">
-		<input tabindex="3" class="input password" type="password" spellcheck="false"
-				data-bind="value: passwordRepeat, hasfocus: passwordRepeatFocus, valueUpdate: 'afterkeydown', 
-				i18n: {'key': '%MODULENAME%/PLACEHOLDER_PASSWORD', 'type': 'placeholder'}" />
-	</div>
-</div>
+<div data-bind="template: { name: '%ModuleName%_controls_InputPassword', data: $data }"></div>
+<div data-bind="template: { name: '%ModuleName%_controls_InputPasswordRepeat', data: $data }"></div>
 
 <div class="row buttons">
 	<button type="submit" tabindex="5" class="button" data-bind="i18n: {'key': '%MODULENAME%/BUTTON_CREATE_ACCOUNT'}, command: registerAccountCommand"></button>

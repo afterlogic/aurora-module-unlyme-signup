@@ -1,4 +1,4 @@
-.UnlymeLoginLayout {
+& {
 	display: flex;
 	justify-content: center;
 	// align-items: center;
@@ -94,18 +94,41 @@
 			margin-bottom: 16px;
 		}
 
-		.input {
-			background: #F8FAFC;
-			padding: 12px 12px !important;
-			border: 1px solid #ECECEC;
-			margin: 0px;
-			width: 100%;
+		
+		.value {
+			.input {
+				background: #F8FAFC;
+				padding: 12px 12px !important;
+				border: 1px solid #ECECEC;
+				margin: 0px;
+				width: 100%;
+	
+				// font-family: Poppins;
+				font-size: 13px;
+				font-weight: 300;
+				line-height: 14px;
+			}
 
-			// font-family: Poppins;
-			font-size: 13px;
-			font-weight: 300;
-			line-height: 14px;
+			.error_text {
+				color: #FF0606;
+				font-size: 12px;
+				font-weight: 400;
+				line-height: 18px;
+				margin-top: 4px;
+				display: none;
+			}
+
+			&.error .input,
+			&.error .custom_selector {
+				border-color: #FC9D9D !important;
+			}
+			&.error .error_text {
+				display: block;
+			}
+
+
 		}
+
 
 		.button {
 			display: block !important;
@@ -116,8 +139,9 @@
 		}
 
 		.row.login {
-			.value {
+			.field {
 				display: flex;
+				width: 100%;
 			}		
 			.input {
 				&.username {
@@ -137,13 +161,76 @@
 
 					}
 				}
-				&.domains,
-				&.domain {
-					border-left: 0px;
-					border-top-left-radius: 0 !important;
-					border-bottom-left-radius: 0 !important;
-					width: auto;
-					border-left: 1px solid #ECECEC;
+			}
+
+			.custom_selector.domains,
+			.input.domain {
+				border-left: 0px;
+				border-top-left-radius: 0 !important;
+				border-bottom-left-radius: 0 !important;
+				width: auto;
+				border-left: 1px solid #ECECEC;
+			}
+		}
+
+		.row.phone {
+			.value {
+				display: flex;
+			}
+
+			.input {
+				letter-spacing: 1px;
+				border-top-left-radius: 0 !important;
+				border-bottom-left-radius: 0 !important;
+			}
+
+			.phone-prefix {
+				// background: #F8FAFC;
+				// padding: 12px 12px;
+				// border: 1px solid #ECECEC;
+				border-radius: 8px 0 0 8px;
+				// margin: 0px;
+				min-width: 60px;
+				display: flex;
+				align-items: center;
+				// margin-right: -1px;
+
+				& > .name {
+					display: flex;
+					align-items: center;
+					gap: 4px;
+				}
+				
+				// .dropdown_content {
+				// 	.item {
+				// 		display: flex;
+				// 		align-items: center;
+				// 		gap: 12px;
+				// 		height: 31px;
+				// 		padding: 8px 16px;
+				// 		box-sizing: border-box;
+				// 	}
+				// }
+					
+				.icon {
+					width: 15px;
+					height: 15px;
+
+					&.au {
+						background: url('../../images/modules/UnlymeSignup/au.png');
+					}
+					&.fr {
+						background: url('../../images/modules/UnlymeSignup/fr.png');
+					}
+					&.de {
+						background: url('../../images/modules/UnlymeSignup/de.png');
+					}
+					&.gb {
+						background: url('../../images/modules/UnlymeSignup/gb.png');
+					}
+					&.us {
+						background: url('../../images/modules/UnlymeSignup/us.png');
+					}
 				}
 			}
 		}

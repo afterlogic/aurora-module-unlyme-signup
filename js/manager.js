@@ -1,10 +1,12 @@
 'use strict'
 
 module.exports = function (oAppData) {
+	
 	require('modules/%ModuleName%/js/enums.js')
 	require('%PathToCoreWebclientModule%/js/vendors/jquery.cookie.js')
 
 	const
+		ko = require('knockout'),
 		App = require('%PathToCoreWebclientModule%/js/App.js'),
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
 		bAnonimUser = App.getUserRole() === window.Enums.UserRole.Anonymous

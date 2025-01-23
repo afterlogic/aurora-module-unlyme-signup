@@ -18,6 +18,39 @@ module.exports = {
 	InfoText: '',
 	BottomInfoHtmlText: '',
 	LoginSignMeType: Enums.LoginSignMeType.DefaultOff, // 0 - off, 1 - on, 2 - don't use
+
+	PhonePrefixes: [
+		{
+			name: 'Australia',
+			code: '+61',
+			icon: 'au',
+		},
+		{
+			name: 'France',
+			code: '+33',
+			icon: 'fr',
+		},
+		{
+			name: 'Germany',
+			code: '+49',
+			icon: 'de',
+		},
+		// {
+		// 	name: 'Switzerland',
+		// 	code: '+41',
+		// 	icon: 'ch',
+		// },
+		{
+			name: 'United Kingdom',
+			code: '+44',
+			icon: 'gb',
+		},
+		{
+			name: 'United States',
+			code: '+1',
+			icon: 'us',
+		},
+	],
 	
 	/**
 	 * Initializes settings from AppData object sections.

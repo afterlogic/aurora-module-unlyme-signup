@@ -1,35 +1,44 @@
 <div class="row login">
 	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LOGIN'}"></label>
-	<div class="value">
-		<input tabindex="1" class="input username" type="text" spellcheck="false"
-				data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
-				i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}" />
-		<select class="input domains" data-bind="visible: domains().length > 1, options: domains, value: selectedDomain"></select>
-		<span class="input domain" data-bind="visible: domains().length === 1">
-			<span data-bind="text: firstDomain"></span>
-		</span>
+	<div class="value" data-bind="css: {'error': usernameExistError() || usernameBadError()}">
+		<div class="field">
+			<input tabindex="1" class="input username" type="text" spellcheck="false"
+					data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
+					i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}" />
+			<span class="input domain" data-bind="visible: domains().length === 1">
+				<span data-bind="text: firstDomain"></span>
+			</span>
+
+			<span class="custom_selector domains" data-bind="dropdown: {'control': false}">
+				<span class="name">
+					<span class="icon"></span>
+					<span class="text" data-bind="text: selectedDomain"></span>
+				</span>
+				<!-- <span class="control">
+					<span class="icon"></span>
+				</span> -->
+				<span class="dropdown">
+					<span class="dropdown_helper">
+						<!-- <span class="dropdown_arrow"><span></span></span> -->
+						<span class="dropdown_content" data-bind="foreach: domains">
+							<span class="item" data-bind="css: $parent.selectedDomain() === $data ? ' selected' : '',
+								click: function () { $parent.selectedDomain($data); }">
+								<!-- <span class="icon" data-bind="css: icon"></span> -->
+								<span class="text" data-bind="text: $data"></span>
+							</span>
+						</span>
+					</span>
+				</span>
+			</span>
+		</div>
+		<div class="error_text" data-bind="visible: usernameExistError(), i18n: {'key': '%MODULENAME%/ERROR_EMAIL_ACCOUNT_EXISTS'}"></div>
+		<div class="error_text" data-bind="visible: usernameBadError(), i18n: {'key': '%MODULENAME%/ERROR_EMAIL_ACCOUNT_FORBIDDEN'}"></div>
 	</div>
 </div>
 
 <div data-bind="template: { name: '%ModuleName%_controls_InputPhone', data: $data }"></div>
-
-<div class="row password">
-	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PASSWORD'}"></label>
-	<div class="value">
-		<input tabindex="2" class="input password" type="password" spellcheck="false"
-				data-bind="value: password, hasfocus: passwordFocus, valueUpdate: 'afterkeydown', 
-				i18n: {'key': '%MODULENAME%/PLACEHOLDER_PASSWORD', 'type': 'placeholder'}" />
-	</div>
-</div>
-
-<div class="row password-repeat">
-	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PASSWORD_REPEAT'}"></label>
-	<div class="value">
-		<input tabindex="3" class="input password" type="password" spellcheck="false"
-				data-bind="value: passwordRepeat, hasfocus: passwordRepeatFocus, valueUpdate: 'afterkeydown', 
-				i18n: {'key': '%MODULENAME%/PLACEHOLDER_PASSWORD', 'type': 'placeholder'}" />
-	</div>
-</div>
+<div data-bind="template: { name: '%ModuleName%_controls_InputPassword', data: $data }"></div>
+<div data-bind="template: { name: '%ModuleName%_controls_InputPasswordRepeat', data: $data }"></div>
 
 <div class="row buttons">
 	<button type="submit" tabindex="4" class="button" data-bind="i18n: {'key': '%MODULENAME%/BUTTON_CREATE_ACCOUNT'}, command: registerAccountCommand"></button>

@@ -112,6 +112,10 @@ CSigninView.prototype.onShow = function ()
 		}
 	},this), 1)
 
+	this.domains(['@unlymemail.com', '@unlymemail.ch', '@unly.me'])
+
+	this.selectedDomain(this.domains()[0])
+
 	// Ajax.send('%ModuleName%', 'GetMailDomains', {}, function (oResponse, oRequest) {
 	// 	if (_.isArray(oResponse.Result))
 	// 	{
@@ -119,7 +123,6 @@ CSigninView.prototype.onShow = function ()
 	// 	}
 	// }, this);
 
-	this.domains(['@unlymemail.com', '@unlymemail.ch', '@unly.me'])
 }
 
 /**

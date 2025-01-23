@@ -1,12 +1,20 @@
 <h2 class="sub-title">Enter the domain name of your organisation</h2>
 <div class="description">Enter your company's domain name. This will be used to set up your own email addresses, for example info@example.com. You will need to confirm later that this domain belongs to your company.</div>
 
-<div class="row domain"">
+<!-- <div data-bind="component: { name: 'like-widget', params: { 
+	value: domain,
+	'%MODULENAME%/LABEL_DOMAIN'
+	'%MODULENAME%/PLACEHOLDER_DOMAIN'
+	'%MODULENAME%/ERROR_DOMAIN_INVALID'
+} }"></div> -->
+
+<div class="row domain">
 	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DOMAIN'}"></label>
-	<div class="value">
-		<input tabindex="1" class="input domain" password type="text" spellcheck="false"
+	<div class="value" data-bind="css: {'error': domainError}">
+		<input tabindex="1" class="input domain" type="text" spellcheck="false"
 				data-bind="value: domain, hasfocus: domainFocus, valueUpdate: 'afterkeydown', 
 				i18n: {'key': '%MODULENAME%/PLACEHOLDER_DOMAIN', 'type': 'placeholder'}" />
+		<div class="error_text" data-bind="i18n: {'key': '%MODULENAME%/ERROR_DOMAIN_INVALID'}"></div>
 	</div>
 </div>
 

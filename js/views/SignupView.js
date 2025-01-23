@@ -1,9 +1,10 @@
 'use strict';
-
+// import IMask from 'imask'
 var
 	_ = require('underscore'),
 	$ = require('jquery'),
 	ko = require('knockout'),
+	IMask = require('imask'),
 	
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	UrlUtils = require('%PathToCoreWebclientModule%/js/utils/Url.js'),
@@ -20,7 +21,7 @@ var
 	
 	$html = $('html')
 ;
-
+// console.log('IMask', )
 /**
  * @constructor
  */
@@ -42,6 +43,8 @@ function CSignupView()
 	this.code = ko.observable('')
 	this.phone = ko.observable('')
 	
+	this.phoneDom = ko.observable(null)
+	
 	this.usernameFocus = ko.observable(false)
 	this.loginFocus = ko.observable(false)
 	this.passwordFocus = ko.observable(false)
@@ -50,6 +53,12 @@ function CSignupView()
 	this.codeFocus = ko.observable(false)
 	this.phoneFocus = ko.observable(false)
 	
+	this.domainError = ko.observable(false)
+	this.passwordError = ko.observable(false)
+	this.passwordRepeatError = ko.observable(false)
+	this.usernameExistError = ko.observable(false)
+	this.usernameBadError = ko.observable(false)
+
 	this.loading = ko.observable(false)
 
 	this.notloading = ko.computed(function () {
@@ -114,10 +123,37 @@ function CSignupView()
 		return this.domains().length > 0 ? this.domains()[0] : ''
 	}, this)
 
-	this.accountType.subscribe(function (value) {
+	this.phonePrefixes = Settings.PhonePrefixes
+	this.selectedPhonePrefix = ko.observable('')
+
+	this.accountType.subscribe(function () {
 		this.username('');
 		this.password('');
 		this.passwordRepeat('');
+	}, this)
+
+	// reset error in change
+	this.username.subscribe(function () {
+		this.usernameBadError(false)
+		this.usernameExistError(false)
+	}, this)
+	this.domain.subscribe(function () {
+		this.domainError(false)
+	}, this)
+	this.password.subscribe(function () {
+		this.passwordError(false)
+	}, this)
+	this.passwordRepeat.subscribe(function () {
+		this.passwordRepeatError(false)
+	}, this)
+
+	this.phoneDom.subscribe(function (element) {
+		// const element = document.getElementById('selector');
+		const maskOptions = {
+			mask: '000-000-00-00',
+			lazy: false,
+		}
+		IMask.default(element[0], maskOptions)
 	}, this)
 
 	this.beforeButtonsControllers = ko.observableArray([])
@@ -147,24 +183,79 @@ CSignupView.prototype.onShow = function ()
 		}
 	},this), 1)
 
+	this.domains(['@unlymemail.com', '@unlymemail.ch', '@unly.me']);
+
+	this.selectedPhonePrefix(this.phonePrefixes[0])
+	this.selectedDomain(this.domains()[0])
+	
 	// Ajax.send('%ModuleName%', 'GetMailDomains', {}, function (oResponse, oRequest) {
 	// 	if (_.isArray(oResponse.Result))
 	// 	{
 	// 		this.domains(oResponse.Result);
 	// 	}
 	// }, this);
+}
 
-	this.domains(['@unlymemail.com', '@unlymemail.ch', '@unly.me']);
-};
+CSignupView.prototype.validateEmail = function ()
+{
+	let valid = true
+
+	if (this.username().length === 0) {
+		this.usernameFocus(true)
+		valid = false
+	}
+
+	if (this.accountType() == Enums.UnlymeAccountType.Personal) {
+		if (this.getEmail().indexOf('test') >= 0) {
+			valid = false
+			this.usernameExistError(!valid)
+		}
+	}
+
+	if (this.getEmail().indexOf('bad') >= 0) {
+		valid = false
+		this.usernameBadError(!valid)
+	}
+
+	return valid
+}
+CSignupView.prototype.validatePassword = function ()
+{
+	let valid = true
+
+	if (this.password().length === 0) {
+		this.passwordFocus(true)
+		valid = false
+	} else {
+		const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/
+		valid = regex.test(this.password())
+		this.passwordError(!valid)
+	}
+
+	return valid
+}
+CSignupView.prototype.validateDomain = function ()
+{
+	const valid = this.domain().indexOf('.') >= 0
+	this.domainError(!valid)
+
+	return valid
+}
+
+CSignupView.prototype.setPhonePrefix = function (prefix)
+{
+	this.selectedPhonePrefix(prefix)
+}
 
 CSignupView.prototype.registerDomain = function ()
 {
 	if (this.domain().length === 0) {
 		this.domainFocus(true)
-	} else {
+	} else if (this.validateDomain()) {
 		this.businessDomainAccepted(true)
 	}
 }
+
 
 CSignupView.prototype.back = function ()
 {
@@ -182,8 +273,8 @@ CSignupView.prototype.back = function ()
 CSignupView.prototype.registerAccount = function ()
 {
 	if (this.screenToShow() == Enums.SignupScreen.PersonalAccount || this.screenToShow() == Enums.SignupScreen.BusinessAccount) {
-		if (this.username().length === 0) {
-			this.usernameFocus(true)
+		
+		if (!this.validateEmail()) {
 			return
 		}
 
@@ -192,8 +283,7 @@ CSignupView.prototype.registerAccount = function ()
 			return
 		}
 
-		if (this.password().length === 0) {
-			this.passwordFocus(true)
+		if (!this.validatePassword()) {
 			return
 		}
 
@@ -204,22 +294,15 @@ CSignupView.prototype.registerAccount = function ()
 
 		if (this.password().trim() !== this.passwordRepeat().trim()) {
 			this.passwordRepeatFocus(true)
+			this.passwordRepeatError(true)
 			return
-		}
-
-		let sDomain = ''
-		let sPassword = this.password().trim()
-		if (this.accountType() === Enums.UnlymeAccountType.Personal) {
-			sDomain = this.domains().length > 1 ? this.selectedDomain() : this.domains()[0]
-		} else {
-			sDomain = '@' + this.domain().trim()
 		}
 
 		const oParameters = {
 			'Id': this.registrationId(),
 			'AccountType': this.accountType(),
-			'Email': this.username().trim() + sDomain,
-			'Password': sPassword,
+			'Email': this.getEmail(),
+			'Password': this.password().trim(),
 			'Phone': this.phone(),
 			'Language': $.cookie('aurora-selected-lang') || '',
 		}
@@ -240,97 +323,16 @@ CSignupView.prototype.registerAccount = function ()
 	}
 }
 
-/**
- * Checks login input value and sends sign-in request to server.
- */
-CSignupView.prototype.signIn = function ()
+CSignupView.prototype.getEmail = function ()
 {
-	// sometimes nockoutjs conflicts with saved passwords in FF
-	// this.login($(this.loginDom()).val());
-	// this.username($(this.usernameDom()).val());
-	// this.password($(this.passwordDom()).val());
-
-	let sLogin = this.login().trim();
-	let sPassword = this.password().trim();
-	let sDomain = '';
-	let koForFocus = null;
-
-	if (!this.loading()) {
-		if (this.accountType() === Enums.UnlymeAccountType.Personal) {
-			sDomain = this.domains().length > 1 ? this.selectedDomain() : this.domains()[0];
-			const sUsername = this.username().trim();
-			if (sUsername.length === 0) {
-				koForFocus = this.usernameFocus;
-			}
-			sLogin =  sUsername + sDomain;
-		} else {
-			sLogin = this.login().trim();
-
-			if (sLogin.length === 0) {
-				koForFocus = this.loginFocus;
-			}
-		}
-
-		if (sPassword.length === 0) {
-			koForFocus = this.passwordFocus;
-		}
-
-		if (koForFocus) {
-			koForFocus(true);
-		}
-
-		if (sLogin.length > 0 && sPassword.length > 0)
-		{
-			var oParameters = {
-				'Login': sLogin,
-				'Password': sPassword,
-				'Language': $.cookie('aurora-selected-lang') || '',
-				'SignMe': this.signMe()
-			};
-
-			App.broadcastEvent('AnonymousUserForm::PopulateFormSubmitParameters', { Module: '%ModuleName%', Parameters: oParameters });
-
-			this.loading(true);
-	
-			Ajax.send('%ModuleName%', 'Login', oParameters, this.onSystemLoginResponse, this);
-		} else {
-			this.shake(true);
-		}
+	let sDomain = ''
+	if (this.accountType() === Enums.UnlymeAccountType.Personal) {
+		sDomain = this.domains().length > 1 ? this.selectedDomain() : this.domains()[0]
+	} else {
+		sDomain = '@' + this.domain().trim()
 	}
-}
 
-/**
- * Receives data from the server. Shows error and shakes form if server has returned false-result.
- * Otherwise clears search-string if it don't contain "reset-pass", "invite-auth" and "oauth" parameters and reloads page.
- * 
- * @param {Object} oResponse Data obtained from the server.
- * @param {Object} oRequest Data has been transferred to the server.
- */
-CSignupView.prototype.onSystemLoginResponseBase = function (oResponse, oRequest)
-{
-	if (false === oResponse.Result)
-	{
-		this.loading(false);
-		this.shake(true);
-		
-		Api.showErrorByCode(oResponse, TextUtils.i18n('COREWEBCLIENT/ERROR_PASS_INCORRECT'));
-	}
-	else
-	{
-		$.removeCookie('aurora-selected-lang');
-
-		if (window.location.search !== '' &&
-			UrlUtils.getRequestParam('reset-pass') === null &&
-			UrlUtils.getRequestParam('invite-auth') === null &&
-			UrlUtils.getRequestParam('oauth') === null)
-		{
-			UrlUtils.clearAndReloadLocation(Browser.ie8AndBelow, true);
-		}
-		else
-		{
-			UrlUtils.clearAndReloadLocation(Browser.ie8AndBelow, false);
-		}
-	}
+	return this.username().trim() + sDomain
 }
 
 /**
@@ -346,14 +348,6 @@ CSignupView.prototype.changeLanguage = function (sLanguage)
 	}
 }
 
-/**
- * @param {Object} oResponse
- * @param {Object} oRequest
- */
-CSignupView.prototype.onSystemLoginResponse = function (oResponse, oRequest)
-{
-	this.onSystemLoginResponseBase(oResponse, oRequest);
-}
 
 /**
  * @param {Object} oComponent
