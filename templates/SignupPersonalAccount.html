@@ -1,0 +1,36 @@
+<div class="row login">
+	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LOGIN'}"></label>
+	<div class="value">
+		<input tabindex="1" class="input username" type="text" spellcheck="false"
+				data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
+				i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}" />
+		<select class="input domains" data-bind="visible: domains().length > 1, options: domains, value: selectedDomain"></select>
+		<span class="input domain" data-bind="visible: domains().length === 1">
+			<span data-bind="text: firstDomain"></span>
+		</span>
+	</div>
+</div>
+
+<div data-bind="template: { name: '%ModuleName%_controls_InputPhone', data: $data }"></div>
+
+<div class="row password">
+	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PASSWORD'}"></label>
+	<div class="value">
+		<input tabindex="2" class="input password" type="password" spellcheck="false"
+				data-bind="value: password, hasfocus: passwordFocus, valueUpdate: 'afterkeydown', 
+				i18n: {'key': '%MODULENAME%/PLACEHOLDER_PASSWORD', 'type': 'placeholder'}" />
+	</div>
+</div>
+
+<div class="row password-repeat">
+	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PASSWORD_REPEAT'}"></label>
+	<div class="value">
+		<input tabindex="3" class="input password" type="password" spellcheck="false"
+				data-bind="value: passwordRepeat, hasfocus: passwordRepeatFocus, valueUpdate: 'afterkeydown', 
+				i18n: {'key': '%MODULENAME%/PLACEHOLDER_PASSWORD', 'type': 'placeholder'}" />
+	</div>
+</div>
+
+<div class="row buttons">
+	<button type="submit" tabindex="4" class="button" data-bind="i18n: {'key': '%MODULENAME%/BUTTON_CREATE_ACCOUNT'}, command: registerAccountCommand"></button>
+</div>

@@ -1,0 +1,69 @@
+<div class="screen UnlymeLoginLayout" style="display: none;" data-bind="css: {'with_bottom_text': sBottomInfoHtmlText !== ''}">
+	<div class="login-panel">
+		<div class="header" data-bind="css: {'custom_logo': sCustomLogoUrl}">
+			<!-- ko if: sCustomLogoUrl === '' --><span class="icon"></span><!-- /ko -->
+			<!-- ko if: sCustomLogoUrl !== '' --><img data-bind="attr: {'src': sCustomLogoUrl}"/><!-- /ko -->
+			<!-- <span class="text" data-bind="i18n: {'key': 'COREWEBCLIENT/HEADING_LOGIN'}"></span> -->
+		</div>
+		<div class="card">
+			
+			<div class="left-col">
+				<!--{%INCLUDE-START/Login-Before-Description/INCLUDE-END%}-->
+				<div class="title">Create your Unlyme account</div>
+				<!-- <div class="description" data-bind="visible: sInfoText !== '', html: sInfoText"></div> -->
+				<div class="description">Enter your Unlyme Account details</div>
+				<!--{%INCLUDE-START/Login-After-Description/INCLUDE-END%}-->
+				<!-- <div class=""></div> -->
+				<div>By creating a Proton account, you agree to our <a href="#">terms and conditions</a></div>
+				<div>Already have an account? <a href="#">Sign in</a></div>
+			</div>
+			<div class="right-col">
+				<form class="form fields" action="#" autocomplete="on" onsubmit="return false;">
+					<div class="fieldset">
+						<!-- <div data-bind="text: screenToShow()"></div>
+						<div data-bind="text: accountType()"></div> -->
+						<div data-bind="template: {
+							name: '%ModuleName%_controls_SwitcherAccountType',
+							if: screenToShow() == Enums.SignupScreen.PersonalAccount || screenToShow() == Enums.SignupScreen.BusinessDomain,
+							data: $data }"></div>
+
+						<div data-bind="template: {
+							name: '%ModuleName%_SignupCodeVerification',
+							if: screenToShow() == Enums.SignupScreen.Confirmation,
+							data: $data }"></div>
+
+						<div data-bind="template: { name: '%ModuleName%_SignupPersonalAccount', if: screenToShow() == Enums.SignupScreen.PersonalAccount, data: $data }"></div>
+						<div data-bind="template: { name: '%ModuleName%_SignupDomain', if: screenToShow() == Enums.SignupScreen.BusinessDomain, data: $data }"></div>
+						<div data-bind="template: { name: '%ModuleName%_SignupBusinessAccount', if: screenToShow() == Enums.SignupScreen.BusinessAccount, data: $data }"></div>
+					</div>
+				</form>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="bottom_description" data-bind="visible: sBottomInfoHtmlText !== '', html: sBottomInfoHtmlText"></div>
+		<!--{%INCLUDE-START/Login-Footer/INCLUDE-END%}-->
+
+		<div class="languages" data-bind="visible: bAllowChangeLanguage && bUseDropdownLanguagesView">
+			<span class="custom_selector right" data-bind="dropdown: {'control': false}">
+				<span class="name" data-bind="css: currentLanguage">
+					<span class="icon"></span>
+					<span class="text" data-bind="text: currentLanguage"></span>
+				</span>
+				<span class="control">
+					<span class="icon"></span>
+				</span>
+				<span class="dropdown">
+					<span class="dropdown_helper">
+						<span class="dropdown_arrow"><span></span></span>
+						<span class="dropdown_content" data-bind="foreach: aLanguages">
+							<span class="item" data-bind="css: value + ($parent.currentLanguage() === value ? ' selected' : ''), click: function () { $parent.changeLanguage(value); }">
+								<span class="icon"></span>
+								<span class="text" data-bind="text: name"></span>
+							</span>
+						</span>
+					</span>
+				</span>
+			</span>
+		</div>
+	</div>	
+</div>

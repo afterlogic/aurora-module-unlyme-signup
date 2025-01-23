@@ -1,0 +1,15 @@
+<h2 class="sub-title">Enter the domain name of your organisation</h2>
+<div class="description">Enter your company's domain name. This will be used to set up your own email addresses, for example info@example.com. You will need to confirm later that this domain belongs to your company.</div>
+
+<div class="row domain"">
+	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DOMAIN'}"></label>
+	<div class="value">
+		<input tabindex="1" class="input domain" password type="text" spellcheck="false"
+				data-bind="value: domain, hasfocus: domainFocus, valueUpdate: 'afterkeydown', 
+				i18n: {'key': '%MODULENAME%/PLACEHOLDER_DOMAIN', 'type': 'placeholder'}" />
+	</div>
+</div>
+
+<div class="row buttons">
+	<button type="submit" tabindex="2" class="button" data-bind="i18n: {'key': '%MODULENAME%/BUTTON_NEXT'}, command: registerDomainCommand"></button>
+</div>

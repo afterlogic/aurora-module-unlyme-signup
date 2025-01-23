@@ -1,0 +1,13 @@
+<div class="row account_type">
+	<div class="custom_switcher">
+		<label class="checked" data-bind="css: {'checked': accountType() == Enums.UnlymeAccountType.Personal}">
+			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ACCOUNT_TYPE_PERSONAL'}"></span>
+			<input type="radio" value="0" name="account_type" data-bind="checked: accountType" />
+		</label>
+
+		<label data-bind="css: {'checked': accountType() == Enums.UnlymeAccountType.Business}">
+			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ACCOUNT_TYPE_BUSINESS'}"></span>
+			<input type="radio" value="1" name="account_type" data-bind="checked: accountType" />
+		</label>
+	</div>
+</div>

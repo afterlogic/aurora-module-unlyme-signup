@@ -1,0 +1,102 @@
+<div class="screen UnlymeLoginLayout" style="display: none;" data-bind="css: {'with_bottom_text': sBottomInfoHtmlText !== ''}">
+	<div class="login-panel">
+		<div class="header" data-bind="css: {'custom_logo': sCustomLogoUrl}">
+			<!-- ko if: sCustomLogoUrl === '' --><span class="icon"></span><!-- /ko -->
+			<!-- ko if: sCustomLogoUrl !== '' --><img data-bind="attr: {'src': sCustomLogoUrl}"/><!-- /ko -->
+			<!-- <span class="text" data-bind="i18n: {'key': 'COREWEBCLIENT/HEADING_LOGIN'}"></span> -->
+		</div>
+		<div class="card">
+			<div class="left-col">
+				<!--{%INCLUDE-START/Login-Before-Description/INCLUDE-END%}-->
+				<div class="title">Sign in</div>
+				<!-- <div class="description" data-bind="visible: sInfoText !== '', html: sInfoText"></div> -->
+				<div class="description">Enter your Unlyme Account details</div>
+				<!--{%INCLUDE-START/Login-After-Description/INCLUDE-END%}-->
+				<!-- <div class=""></div> -->
+				<div>New to Unlyme? <a href="#signup">Create account</a></div>
+				<div><a href="#">Trouble signing in?</a></div>
+			</div>
+			<div class="right-col">
+				<form class="form fields" action="#" autocomplete="on" onsubmit="return false;" data-bind="command: loginCommand">
+					<div class="fieldset">
+						<div data-bind="template: { name: '%ModuleName%_controls_SwitcherAccountType', data: $data }"></div>
+
+						<div class="row login" data-bind="visible: accountType() == Enums.UnlymeAccountType.Personal">
+							<label for="login_login" class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LOGIN'}"></label>
+							<div class="value">
+								<input id="login_login" tabindex="1" class="input username" password type="text" spellcheck="false"
+										data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
+										i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}, initDom: usernameDom" />
+								<select class="input domains" data-bind="visible: domains().length > 1, options: domains, value: selectedDomain"></select>
+								<span class="input domain" data-bind="visible: domains().length === 1">
+									<span data-bind="text: firstDomain"></span>
+								</span>
+							</div>
+						</div>
+
+						<div class="row login" data-bind="visible: accountType() == Enums.UnlymeAccountType.Business">
+							<label for="login_login" class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LOGIN'}"></label>
+							<div class="value">
+								<input id="login_login" tabindex="1" class="input email" password type="text" spellcheck="false"
+										data-bind="value: login, hasfocus: loginFocus, valueUpdate: 'afterkeydown', 
+										i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}, initDom: loginDom" />
+							</div>
+						</div>
+
+						<div class="row password">
+							<label for="login_password" class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PASSWORD'}"></label>
+							<div class="value">
+								<input id="login_password" tabindex="3" class="input password" name="password" type="password" spellcheck="false"
+										data-bind="value: password, hasfocus: passwordFocus, valueUpdate: 'afterkeydown', 
+										i18n: {'key': '%MODULENAME%/PLACEHOLDER_PASSWORD', 'type': 'placeholder'}, initDom: passwordDom" />
+							</div>
+						</div>
+					</div>
+					{%INCLUDE-START/Login-Before-Submit-Button/INCLUDE-END%}
+					<!-- ko foreach: beforeButtonsControllers -->
+						<!-- ko template: { name: $data.ViewTemplate, data: $data} --><!-- /ko -->
+					<!-- /ko -->
+					<div class="row signme" data-bind="visible: bUseSignMe">
+						<span>
+							<label class="custom_checkbox" data-bind="css: {'checked': signMe, 'focus': signMeFocused}">
+								<span class="icon"></span>
+								<input id="signme" tabindex="4" type="checkbox" data-bind="checked: signMe, hasfocus: signMeFocused" />
+							</label>
+							<label class="signme_label" for="signme" data-bind="i18n: {'key': '%MODULENAME%/LABEL_REMEMBER_ME'}"></label>
+						</span>
+					</div>
+					<div class="row buttons">
+						<button type="submit" tabindex="5" class="button login" data-bind="text: signInButtonText, command: loginCommand"></button>
+					</div>
+					{%INCLUDE-START/Login-After/INCLUDE-END%}
+				</form>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="bottom_description" data-bind="visible: sBottomInfoHtmlText !== '', html: sBottomInfoHtmlText"></div>
+		<!--{%INCLUDE-START/Login-Footer/INCLUDE-END%}-->
+
+		<div class="languages" data-bind="visible: bAllowChangeLanguage && bUseDropdownLanguagesView">
+			<span class="custom_selector right" data-bind="dropdown: {'control': false}">
+				<span class="name" data-bind="css: currentLanguage">
+					<span class="icon"></span>
+					<span class="text" data-bind="text: currentLanguage"></span>
+				</span>
+				<span class="control">
+					<span class="icon"></span>
+				</span>
+				<span class="dropdown">
+					<span class="dropdown_helper">
+						<span class="dropdown_arrow"><span></span></span>
+						<span class="dropdown_content" data-bind="foreach: aLanguages">
+							<span class="item" data-bind="css: value + ($parent.currentLanguage() === value ? ' selected' : ''), click: function () { $parent.changeLanguage(value); }">
+								<span class="icon"></span>
+								<span class="text" data-bind="text: name"></span>
+							</span>
+						</span>
+					</span>
+				</span>
+			</span>
+		</div>
+	</div>	
+</div>
