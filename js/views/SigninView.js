@@ -29,7 +29,6 @@ function CSigninView()
 	CAbstractScreenView.call(this, '%ModuleName%')
 	
 	this.sCustomLogoUrl = Settings.CustomLogoUrl
-	this.sInfoText = Settings.InfoText
 	this.sBottomInfoHtmlText = Settings.BottomInfoHtmlText
 	
 
@@ -71,13 +70,6 @@ function CSigninView()
 	this.aLanguages = UserSettings.LanguageList
 	this.currentLanguage = ko.observable(UserSettings.Language)
 	this.bAllowChangeLanguage = Settings.AllowChangeLanguage && !App.isMobile()
-	this.headingSelectLanguage = ko.computed(function () {
-		var sSiteName = UserSettings.SiteName
-		if (_.isEmpty(sSiteName)) {
-			sSiteName = TextUtils.i18n('%MODULENAME%/HEADING_DEFAULT_SITENAME')
-		}
-		return TextUtils.i18n('%MODULENAME%/HEADING_SELECT_LANGUAGE', {'SITENAME': sSiteName})
-	}, this)
 
 	this.domains = ko.observableArray([])
 	this.selectedDomain = ko.observable('')

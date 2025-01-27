@@ -30,7 +30,6 @@ function CSignupView()
 	CAbstractScreenView.call(this, '%ModuleName%')
 	
 	this.sCustomLogoUrl = Settings.CustomLogoUrl
-	this.sInfoText = Settings.InfoText
 	this.sBottomInfoHtmlText = Settings.BottomInfoHtmlText
 	
 	this.registrationId = ko.observable('')
