@@ -1,6 +1,6 @@
 <div data-bind="template: { name: '%ModuleName%_controls_ButtonBack', data: $data }"></div>
 
-<h2>To confirm your registration, enter the code we sent you in the SMS message:</h2>
+<h2 data-bind="i18n: {key: '%MODULENAME%/SUBTITLE_CORE_VERIFICATION'}"></h2>
 
 <div class="row code">
 	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_CODE'}"></label>
@@ -14,4 +14,4 @@
 	<button type="submit" tabindex="2" class="button primary" data-bind="i18n: {'key': '%MODULENAME%/BUTTON_CONFIRM'}, command: confirmCommand"></button>
 </div>
 
-<div>Didn't receive the code? <a href="#">Resend (0:57)</a></div>
+<div data-bind="i18n: {key: '%MODULENAME%/HINT_RESENT_VERIFICATION_CODE', type: 'html'}"></div>

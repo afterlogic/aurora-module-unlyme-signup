@@ -1,4 +1,4 @@
-<div class="screen UnlymeLoginLayout" style="display: none;" data-bind="css: {'with_bottom_text': sBottomInfoHtmlText !== ''}">
+<div class="screen UnlymeLoginLayout" style="display: none;">
 	<div class="login-panel">
 		<div class="header" data-bind="css: {'custom_logo': sCustomLogoUrl}">
 			<!-- ko if: sCustomLogoUrl === '' --><span class="icon"></span><!-- /ko -->
@@ -8,13 +8,10 @@
 		<div class="card">
 			<div class="left-col">
 				<!--{%INCLUDE-START/Login-Before-Description/INCLUDE-END%}-->
-				<div class="title">Sign in</div>
-				<!-- <div class="description" data-bind="visible: sInfoText !== '', html: sInfoText"></div> -->
-				<div class="description">Enter your Unlyme Account details</div>
+				<div class="title" data-bind="i18n: {'key': '%MODULENAME%/TITLE_SIGNIN'}"></div>
+				<div class="description" data-bind="i18n: {'key': '%MODULENAME%/DESCRIPTION_SIGNIN', type: 'html'}"></div>
 				<!--{%INCLUDE-START/Login-After-Description/INCLUDE-END%}-->
-				<!-- <div class=""></div> -->
-				<div>New to Unlyme? <a href="#signup">Create account</a></div>
-				<div><a href="#">Trouble signing in?</a></div>
+				<div data-bind="i18n: {'key': '%MODULENAME%/POST_TEXT_SIGNIN', type: 'html'}"></div>
 			</div>
 			<div class="right-col">
 				<form class="form fields" action="#" autocomplete="on" onsubmit="return false;" data-bind="command: loginCommand">

@@ -1,4 +1,4 @@
-<div class="screen UnlymeLoginLayout" style="display: none;" data-bind="css: {'with_bottom_text': sBottomInfoHtmlText !== ''}">
+<div class="screen UnlymeLoginLayout" style="display: none;">
 	<div class="login-panel">
 		<div class="header" data-bind="css: {'custom_logo': sCustomLogoUrl}">
 			<!-- ko if: sCustomLogoUrl === '' --><span class="icon"></span><!-- /ko -->
@@ -9,19 +9,14 @@
 			
 			<div class="left-col">
 				<!--{%INCLUDE-START/Login-Before-Description/INCLUDE-END%}-->
-				<div class="title">Create your Unlyme account</div>
-				<!-- <div class="description" data-bind="visible: sInfoText !== '', html: sInfoText"></div> -->
-				<div class="description"></div>
+				<div class="title" data-bind="i18n: {'key': '%MODULENAME%/TITLE_SIGNUP'}"></div>
+				<div class="description" data-bind="i18n: {key: '%MODULENAME%/DESCRIPTION_SIGNUP', type: 'html'}"></div>
 				<!--{%INCLUDE-START/Login-After-Description/INCLUDE-END%}-->
-				<!-- <div class=""></div> -->
-				<div>By creating a Unlyme account, you agree to our <a href="#">terms and conditions</a></div>
-				<div>Already have an account? <a href="#">Sign in</a></div>
+				<div class="post-text" data-bind="i18n: {key: '%MODULENAME%/POST_TEXT_SIGNUP', type: 'html'}"></div>
 			</div>
 			<div class="right-col">
 				<form class="form fields" action="#" autocomplete="on" onsubmit="return false;">
 					<div class="fieldset">
-						<!-- <div data-bind="text: screenToShow()"></div>
-						<div data-bind="text: accountType()"></div> -->
 						<div data-bind="template: {
 							name: '%ModuleName%_controls_SwitcherAccountType',
 							if: screenToShow() == Enums.SignupScreen.PersonalAccount || screenToShow() == Enums.SignupScreen.BusinessDomain,
