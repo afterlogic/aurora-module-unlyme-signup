@@ -7,7 +7,13 @@
 
 namespace Aurora\Modules\UnlymeSignup;
 
+use Aurora\System\Api;
 use Aurora\System\Enums\UserRole;
+use Illuminate\Support\Str;
+use Aurora\System\Utils;
+use Aurora\Modules\MailDomains\Module as MailDomains;
+use Aurora\Modules\Core\Module as Core;
+use Aurora\Modules\Mail\Module as Mail;
 
 /**
  * Displays standard login form with ability to pass login and password.
@@ -54,7 +60,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
      */
     public function GetSettings()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
+        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
 
         return array(
             'ServerModuleName' => $this->oModuleSettings->ServerModuleName,
@@ -69,11 +75,225 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         );
     }
 
+    /**
+     * @param mixed $Login
+     * @param mixed $Password
+     * @param mixed $Language
+     * @param mixed $SignMe
+     * @return array
+     */
     public function Login($Login, $Password, $Language = '', $SignMe = false)
     {
-        $mResult = \Aurora\Modules\Core\Module::Decorator()->Login($Login, $Password, $Language, $SignMe);
+        $mResult = Core::Decorator()->Login($Login, $Password, $Language, $SignMe);
 
         return $mResult;
     }
+
+    /**
+     * Summary of Register
+     * @param mixed $Domain
+     * @param mixed $AccountType
+     * @param mixed $Phone
+     * @param mixed $Email
+     * @param mixed $Login
+     * @param mixed $Password
+     * @param mixed $Language
+     * @return bool
+     */
+    public function Register($Domain = '', $AccountType = Enums\AccountType::Personal, $Phone = '', $Email = '', $Login = '', $Password = '', $Language = '', $UUID = '')
+    {
+        $mResult = false;
+        $regUser = null;
+        $sendCode = false;
+
+        if($AccountType === Enums\AccountType::Business) {
+            if (empty($UUID)) {
+                if (self::Decorator()->VerifyDomain($Domain)) {
+                    $regUser = Models\RegistrationUser::create([
+                        'Domain' => $Domain,
+                        'AccountType' => $AccountType,
+                    ]);
+                }
+            } elseif (self::Decorator()->VerifyEmail($Email)) {
+                Models\RegistrationUser::where('UUID', $UUID)->update([
+                    'Phone' => $Phone,
+                    'Email' => $Email,
+                    'Login' => $Login,
+                    'Password' => Utils::EncryptValue(Str::random(6) . $Password),
+                    'Language' => $Language
+                ]);
+                $sendCode = true;
+            }
+        } elseif ($AccountType === Enums\AccountType::Personal) {
+            if (self::Decorator()->VerifyEmail($Email)) {
+                $regUser = Models\RegistrationUser::create([
+                    'AccoutType' => $AccountType,
+                    'Phone' => $Phone,
+                    'Email' => $Email,
+                    'Login' => $Login,
+                    'Password' => Utils::EncryptValue(Str::random(6) . $Password),
+                    'Language' => $Language
+                ]);
+                $sendCode = true;
+            }
+        }
+
+        if ($regUser && empty($regUser->UUID)) {
+            $regUser->UUID = $regUser->generateUUID();
+            $regUser->save();
+            $mResult = $regUser->UUID;
+        }
+
+        if ($sendCode) {
+            $this->sendCode($regUser);
+            $mResult = $regUser->UUID;
+        }
+
+        return $mResult;
+    }
+
+    /**
+     * Summary of VerifyDomain
+     * @param mixed $Domain
+     * @return bool
+     */
+    public function VerifyDomain($Domain)
+    {
+        $mResult = false;
+
+        if (!empty($Domain)) {
+            $domain = MailDomains::Decorator()->getDomainsManager()->getDomainByName($Domain, 0);
+            $registrationDomain = Models\RegistrationUser::where('Domain', $Domain)->first();
+            $tenant = Core::getInstance()->getTenantsManager()->getTenantByName($Domain);
+            if ($domain || $registrationDomain || $tenant) {
+                throw new \Aurora\System\Exceptions\ApiException(\Aurora\Modules\MailDomains\Enums\ErrorCodes::DomainExists);
+            } else {
+                $mResult = true;
+            }
+        }
+
+        return $mResult;
+    }
+
+    /**
+     * Summary of VerifyEmail
+     * @param mixed $Email
+     * @return bool
+     */
+    public function VerifyEmail($Email)
+    {
+        $mResult = true;
+
+        if (!empty($Email)) {
+            $account = Mail::Decorator()->getAccountsManager()->getAccountUsedToAuthorize($Email);
+            $registrationEmail = Models\RegistrationUser::where('Email', $Email)->first();
+            if ($account || $registrationEmail) {
+                throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AccountExists);
+            } else {
+                $mResult = true;
+            }
+        }
+
+        return $mResult;
+    }
+
+    /**
+     * Summary of ConfirmRegistration
+     * @param mixed $UUID
+     * @param mixed $Code
+     * @return bool
+     */
+    public function ConfirmRegistration($UUID, $Code)
+    {
+        $mResult = false;
+
+        $regUser = Models\RegistrationUser::where('UUID', $UUID)->first();
+        $tenantId = 0;
+        if ($regUser && $this->validateCode($regUser->Phone, $Code)) { //TODO: Validate code from sms
+            $prevState = Api::skipCheckUserRole(true);
+            $oServer = \Aurora\Modules\Mail\Models\Server::where([['OwnerType', '=', \Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin]])->first();
+            $serverId = $oServer ? $oServer->Id : 0;
+            if ($regUser->AccountType === Enums\AccountType::Business) {
+                $tenantId = Core::Decorator()->CreateTenant(0, $regUser->Domain);
+                if ($tenantId) {
+                    $domainId = MailDomains::Decorator()->CreateDomain($tenantId, $serverId, $regUser->Domain);
+                    if (!$domainId) {
+                        //TODO: Can`t create Domain
+                    }
+                } else {
+                    //TODO: Cant`t Create Tenant
+                }
+            } elseif ($regUser->AccountType === Enums\AccountType::Personal) {
+                $tenant = \Aurora\Modules\Core\Models\Tenant::whereNull('Properties->BillingUnlyme::IsBusiness')->first();
+                if ($tenant) {
+                    $tenantId = $tenant->Id;
+                }
+            }
+            $userId = Core::Decorator()->CreateUser($tenantId, $regUser->Email);
+            if ($userId) {
+                $oUser = Core::Decorator()->GetUser($userId);
+                if ($oUser) {
+                    $oUser->Language = $regUser->Language;
+                    if ($regUser->AccountType === Enums\AccountType::Business) {
+                        $oUser->Role = UserRole::TenantAdmin;
+                    }
+                    $oUser->save();
+                }
+                $account = Mail::Decorator()->CreateAccount(
+                    $userId, 
+                    '', 
+                    $regUser->Email, 
+                    $regUser->Login, 
+                    $regUser->Password
+                );
+                if ($account) {
+                    $mResult = true;
+                    $regUser->delete();
+                } else {
+                    //TODO: Can`t create account
+                }
+            } else {
+                //TODO: Can`t create user
+            }
+            \Aurora\Api::skipCheckUserRole($prevState);
+        }
+        return $mResult;
+    }
+
+    /**
+     * Summary of ResendCode
+     * @param mixed $UUID
+     * @param mixed $Code
+     * @return int
+     */
+    public function ResendCode($UUID)
+    {
+        $mResult = 0;
+        $regUser = Models\RegistrationUser::where('UUID', $UUID)->first();
+        if ($regUser) {
+            $lastSent = $regUser->LastSentCodeTime;
+            $currentTime = time();
+            if ($currentTime - $lastSent < 60) {
+                return false;
+            }
+            $mResult = $this->sendCode($regUser);
+        }
+        return $mResult;
+    }
     /***** public functions might be called with web API *****/
+
+    protected function sendCode($RegUser) 
+    {
+        if (!empty($RegUser->Phone)) {
+            $RegUser->LastSentCodeTime = time();
+            $RegUser->save();
+        }
+
+        return true;
+    }
+
+    protected function validateCode($RegUser, $Code) 
+    {
+        return $Code == 123456;
+    }
 }
