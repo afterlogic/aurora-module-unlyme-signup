@@ -22,14 +22,10 @@
 							if: screenToShow() == Enums.SignupScreen.PersonalAccount || screenToShow() == Enums.SignupScreen.BusinessDomain,
 							data: $data }"></div>
 
-						<div data-bind="template: {
-							name: '%ModuleName%_SignupCodeVerification',
-							if: screenToShow() == Enums.SignupScreen.Confirmation,
-							data: $data }"></div>
-
 						<div data-bind="template: { name: '%ModuleName%_SignupPersonalAccount', if: screenToShow() == Enums.SignupScreen.PersonalAccount, data: $data }"></div>
 						<div data-bind="template: { name: '%ModuleName%_SignupDomain', if: screenToShow() == Enums.SignupScreen.BusinessDomain, data: $data }"></div>
 						<div data-bind="template: { name: '%ModuleName%_SignupBusinessAccount', if: screenToShow() == Enums.SignupScreen.BusinessAccount, data: $data }"></div>
+						<div data-bind="template: { name: '%ModuleName%_SignupCodeVerification', if: screenToShow() == Enums.SignupScreen.Confirmation, data: $data }"></div>
 					</div>
 				</form>
 				<div class="clear"></div>

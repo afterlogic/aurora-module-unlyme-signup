@@ -63,8 +63,6 @@ function CSigninView()
 
 	this.login(Settings.DemoLogin || '')
 	this.password(Settings.DemoPassword || '')
-	
-	this.shake = ko.observable(false).extend({'autoResetToFalse': 800})
 
 	this.bRtl = UserSettings.IsRTL
 	this.aLanguages = UserSettings.LanguageList
@@ -73,9 +71,6 @@ function CSigninView()
 
 	this.domains = ko.observableArray([])
 	this.selectedDomain = ko.observable('')
-	this.firstDomain = ko.computed(function () {
-		return this.domains().length > 0 ? this.domains()[0] : ''
-	}, this)
 
 	this.beforeButtonsControllers = ko.observableArray([]);
 	App.broadcastEvent('AnonymousUserForm::PopulateBeforeButtonsControllers', { ModuleName: '%ModuleName%', RegisterBeforeButtonsController: this.registerBeforeButtonsController.bind(this) })
@@ -171,13 +166,13 @@ CSigninView.prototype.signIn = function ()
 	
 			Ajax.send('%ModuleName%', 'Login', oParameters, this.onSystemLoginResponse, this)
 		} else {
-			this.shake(true)
+			console.log('Error')
 		}
 	}
 }
 
 /**
- * Receives data from the server. Shows error and shakes form if server has returned false-result.
+ * Receives data from the server. Shows error if server has returned false-result.
  * Otherwise clears search-string if it don't contain "reset-pass", "invite-auth" and "oauth" parameters and reloads page.
  * 
  * @param {Object} oResponse Data obtained from the server.
@@ -187,7 +182,6 @@ CSigninView.prototype.onSystemLoginResponseBase = function (oResponse, oRequest)
 {
 	if (false === oResponse.Result) {
 		this.loading(false)
-		this.shake(true)
 		
 		Api.showErrorByCode(oResponse, TextUtils.i18n('COREWEBCLIENT/ERROR_PASS_INCORRECT'))
 	} else {

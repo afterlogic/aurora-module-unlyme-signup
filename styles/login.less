@@ -91,6 +91,10 @@
 
 		.fields .row {
 			margin-bottom: 16px;
+			
+			&.buttons {
+				margin-bottom: 0px;
+			}
 		}
 
 		
@@ -487,10 +491,6 @@
 				background: @focused-background;
 				border-color: @focusedBorderColor;
 				position: relative;
-			}
-
-			&.shake {
-				.animation(shake 0.8s linear);
 			}
 
 			// &:first-child {

@@ -1,19 +1,15 @@
 'use strict';
-// import IMask from 'imask'
+
 var
 	_ = require('underscore'),
 	$ = require('jquery'),
 	ko = require('knockout'),
 	IMask = require('imask'),
 	
-	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
-	UrlUtils = require('%PathToCoreWebclientModule%/js/utils/Url.js'),
 	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
 	
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
-	Api = require('%PathToCoreWebclientModule%/js/Api.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
-	Browser = require('%PathToCoreWebclientModule%/js/Browser.js'),
 	CAbstractScreenView = require('%PathToCoreWebclientModule%/js/views/CAbstractScreenView.js'),
 	UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 	
@@ -21,7 +17,7 @@ var
 	
 	$html = $('html')
 ;
-// console.log('IMask', )
+
 /**
  * @constructor
  */
@@ -32,7 +28,7 @@ function CSignupView()
 	this.sCustomLogoUrl = Settings.CustomLogoUrl
 	this.sBottomInfoHtmlText = Settings.BottomInfoHtmlText
 	
-	this.registrationId = ko.observable('')
+	this.registrationUUID = ko.observable('')
 	this.accountType = ko.observable(Enums.UnlymeAccountType.Personal)
 	this.username = ko.observable('')
 	this.login = ko.observable('')
@@ -100,16 +96,9 @@ function CSignupView()
 		return screenToShow
 	}, this);
 
-
-	// this.primaryButtonText = ko.computed(function () {
-	// 	return this.loading() ? TextUtils.i18n('COREWEBCLIENT/ACTION_SIGN_IN_IN_PROGRESS') : TextUtils.i18n('COREWEBCLIENT/ACTION_SIGN_IN');
-	// }, this);
-
 	this.registerAccountCommand = Utils.createCommand(this, this.registerAccount, this.notloading)
 	this.confirmCommand = Utils.createCommand(this, this.signUp, this.notloading)
 	this.registerDomainCommand = Utils.createCommand(this, this.registerDomain, this.notloading)
-	
-	this.shake = ko.observable(false).extend({'autoResetToFalse': 800})
 	
 	this.bRtl = UserSettings.IsRTL
 	this.aLanguages = UserSettings.LanguageList
@@ -118,9 +107,6 @@ function CSignupView()
 
 	this.domains = ko.observableArray([])
 	this.selectedDomain = ko.observable('')
-	this.firstDomain = ko.computed(function () {
-		return this.domains().length > 0 ? this.domains()[0] : ''
-	}, this)
 
 	this.phonePrefixes = Settings.PhonePrefixes
 	this.selectedPhonePrefix = ko.observable('')
@@ -131,7 +117,25 @@ function CSignupView()
 		this.passwordRepeat('');
 	}, this)
 
-	// reset error in change
+	this.init()
+
+	this.beforeButtonsControllers = ko.observableArray([])
+	App.broadcastEvent('AnonymousUserForm::PopulateBeforeButtonsControllers', { ModuleName: '%ModuleName%', RegisterBeforeButtonsController: this.registerBeforeButtonsController.bind(this) })
+
+	App.broadcastEvent('%ModuleName%::ConstructView::after', {'Name': this.ViewConstructorName, 'View': this})
+}
+
+_.extendOwn(CSignupView.prototype, CAbstractScreenView.prototype)
+
+CSignupView.prototype.ViewTemplate = '%ModuleName%_SignupView'
+CSignupView.prototype.ViewConstructorName = 'CSignupView'
+CSignupView.prototype.onBind = function ()
+{
+	$html.addClass('non-adjustable-valign')
+}
+CSignupView.prototype.init = function ()
+{
+	// reset errors on change input values
 	this.username.subscribe(function () {
 		this.usernameBadError(false)
 		this.usernameExistError(false)
@@ -147,28 +151,12 @@ function CSignupView()
 	}, this)
 
 	this.phoneDom.subscribe(function (element) {
-		// const element = document.getElementById('selector');
 		const maskOptions = {
 			mask: '000-000-00-00',
 			lazy: false,
 		}
 		IMask.default(element[0], maskOptions)
 	}, this)
-
-	this.beforeButtonsControllers = ko.observableArray([])
-	App.broadcastEvent('AnonymousUserForm::PopulateBeforeButtonsControllers', { ModuleName: '%ModuleName%', RegisterBeforeButtonsController: this.registerBeforeButtonsController.bind(this) })
-
-	App.broadcastEvent('%ModuleName%::ConstructView::after', {'Name': this.ViewConstructorName, 'View': this})
-}
-
-_.extendOwn(CSignupView.prototype, CAbstractScreenView.prototype)
-
-CSignupView.prototype.ViewTemplate = '%ModuleName%_SignupView'
-CSignupView.prototype.ViewConstructorName = 'CSignupView'
-
-CSignupView.prototype.onBind = function ()
-{
-	$html.addClass('non-adjustable-valign')
 }
 
 /**
@@ -298,7 +286,7 @@ CSignupView.prototype.registerAccount = function ()
 		}
 
 		const oParameters = {
-			'Id': this.registrationId(),
+			'Id': this.registrationUUID(),
 			'AccountType': this.accountType(),
 			'Email': this.getEmail(),
 			'Password': this.password().trim(),

@@ -6,7 +6,7 @@
 					data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
 					i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}" />
 			<span class="input domain" data-bind="visible: domains().length === 1">
-				<span data-bind="text: firstDomain"></span>
+				<span data-bind="text: domains()[0]"></span>
 			</span>
 
 			<span class="custom_selector domains" data-bind="dropdown: {'control': false}">
