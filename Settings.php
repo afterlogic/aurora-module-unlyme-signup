@@ -87,6 +87,12 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 "Enables changing language on login page",
             ),
+            "CodeResendTime" => new SettingsProperty(
+                60,
+                "int",
+                null,
+                "Code resend time in seconds",
+            ),
             "Twilio" => new SettingsProperty(
                 [
                     "AccountSID" => "",
@@ -95,7 +101,7 @@ class Settings extends \Aurora\System\Module\Settings
                 ],
                 "array",
                 null,
-                "Enables changing language on login page",
+                "Twilio credentials",
             ),
         ];
     }

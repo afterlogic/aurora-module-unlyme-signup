@@ -274,9 +274,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $mResult = 0;
         $regUser = Models\RegistrationUser::where('UUID', $UUID)->first();
         if ($regUser) {
-            $lastSent = $regUser->LastSentCodeTime;
-            $currentTime = time();
-            if ($currentTime - $lastSent < 60) {
+            if (time() - $regUser->LastSentCodeTime < $this->getConfig('CodeResendTime', 60)) {
                 return false;
             }
             $mResult = $this->sendCode($regUser);
