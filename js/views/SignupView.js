@@ -109,10 +109,10 @@ function CSignupView()
 	this.currentLanguage = ko.observable(UserSettings.Language)
 	this.bAllowChangeLanguage = Settings.AllowChangeLanguage && !App.isMobile()
 
-	this.domains = ko.observableArray([])
+	this.domains = ko.observableArray(Settings.PersonalDomains)
 	this.selectedDomain = ko.observable('')
 
-	this.phonePrefixes = Settings.PhonePrefixes
+	this.phonePrefixes = Settings.PhoneCountryCodes
 	this.selectedPhonePrefix = ko.observable(null)
 
 	this.init()
@@ -216,26 +216,8 @@ CSignupView.prototype.onShow = function ()
 		}
 	},this), 1)
 
-	Ajax.send('%ModuleName%', 'GetPersonalDomains', {}, function (oResponse, oRequest) {
-		this.businessDomainApproved(oResponse?.Result ? true : false)
-
-		if (oResponse?.Result) {
-			this.domains(Types.pArray(oResponse.Result))
-		}
-	}, this)
-	
-
-	// this.domains(['@unlymemail.com', '@unlymemail.ch', '@unly.me', '@afterlogic.com']);
-
 	this.selectedPhonePrefix(this.phonePrefixes[0])
 	this.selectedDomain(this.domains()[0])
-	
-	// Ajax.send('%ModuleName%', 'GetMailDomains', {}, function (oResponse, oRequest) {
-	// 	if (_.isArray(oResponse.Result))
-	// 	{
-	// 		this.domains(oResponse.Result);
-	// 	}
-	// }, this);
 }
 
 CSignupView.prototype.validatePhone = function ()

@@ -19,43 +19,8 @@ module.exports = {
 	BottomInfoHtmlText: '',
 	LoginSignMeType: Enums.LoginSignMeType.DefaultOff, // 0 - off, 1 - on, 2 - don't use
 
-	PhonePrefixes: [
-		{
-			name: 'Australia',
-			code: '+61',
-			icon: 'au',
-		},
-		{
-			name: 'France',
-			code: '+33',
-			icon: 'fr',
-		},
-		{
-			name: 'Germany',
-			code: '+49',
-			icon: 'de',
-		},
-		// {
-		// 	name: 'Switzerland',
-		// 	code: '+41',
-		// 	icon: 'ch',
-		// },
-		{
-			name: 'United Kingdom',
-			code: '+44',
-			icon: 'gb',
-		},
-		{
-			name: 'United States',
-			code: '+1',
-			icon: 'us',
-		},
-		{
-			name: 'Russia',
-			code: '+7',
-			icon: 'ru',
-		},
-	],
+	PersonalDomains: [],
+	PhoneCountryCodes: [],
 	
 	/**
 	 * Initializes settings from AppData object sections.
@@ -81,6 +46,8 @@ module.exports = {
 			this.InfoText = Types.pString(oAppDataSection.InfoText, this.InfoText)
 			this.BottomInfoHtmlText = Types.pString(oAppDataSection.BottomInfoHtmlText, this.BottomInfoHtmlText)
 			this.LoginSignMeType = Types.pEnum(oAppDataSection.LoginSignMeType, Enums.LoginSignMeType, this.LoginSignMeType)
+			this.PersonalDomains = Types.pArray(oAppDataSection.PersonalDomains, this.PersonalDomains)
+			this.PhoneCountryCodes = Types.pArray(oAppDataSection.PhoneCountryCodes, this.PhoneCountryCodes)
 		}
 		
 		if (!_.isEmpty(oAppDataBrandingWebclientSection))

@@ -93,6 +93,43 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 "Code resend time in seconds",
             ),
+            "PhoneCountryCodes" => new SettingsProperty(
+                [
+                    [
+                        "name" => "Australia",
+                        "code" => "+61",
+                        "icon" => "au",
+                    ],
+                    [
+                        "name" => "France",
+                        "code" => "+33",
+                        "icon" => "fr",
+                    ],
+                    [
+                        "name" => "Germany",
+                        "code" => "+49",
+                        "icon" => "de",
+                    ],
+                    [
+                    	"name" => "Switzerland",
+                    	"code" => "+41",
+                    	"icon" => "ch",
+                    ],
+                    [
+                        "name" => "United Kingdom",
+                        "code" => "+44",
+                        "icon" => "gb",
+                    ],
+                    [
+                        "name" => "United States",
+                        "code" => "+1",
+                        "icon" => "us",
+                    ]
+                ],
+                "array",
+                null,
+                "List of codes wiht country codes and names",
+            ),
             "Twilio" => new SettingsProperty(
                 [
                     "AccountSID" => "",

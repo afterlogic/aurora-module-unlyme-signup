@@ -12,7 +12,7 @@
 				<span data-bind="text: domains()[0]"></span>
 			</span>
 
-			<span class="custom_selector domains" data-bind="dropdown: {'control': false}">
+			<span class="custom_selector domains" data-bind="visible: domains().length > 1, dropdown: {'control': false}">
 				<span class="name">
 					<span class="icon"></span>
 					<span class="text" data-bind="text: selectedDomain"></span>
