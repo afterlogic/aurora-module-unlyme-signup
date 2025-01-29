@@ -4,9 +4,10 @@
 
 <div class="row code">
 	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_CODE'}"></label>
-	<div class="value">
+	<div class="value" data-bind="css: {'error': codeError}">
 		<input tabindex="1" class="input" type="text" spellcheck="false"
 				data-bind="value: code, hasfocus: codeFocus, valueUpdate: 'afterkeydown'" />
+		<div class="error_text" data-bind="visible: codeError(), i18n: {'key': '%MODULENAME%/ERROR_CODE_INVALID'}"></div>
 	</div>
 </div>
 

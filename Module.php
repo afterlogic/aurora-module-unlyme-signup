@@ -112,6 +112,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $regUser = Models\RegistrationUser::create([
                         'Domain' => $Domain,
                         'AccountType' => $AccountType,
+                        'Language' => $Language
                     ]);
                 }
             } elseif (self::Decorator()->VerifyEmail($Email)) {
@@ -157,7 +158,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
     /**
      * Summary of VerifyDomain
+     * 
      * @param mixed $Domain
+     * 
      * @return bool
      */
     public function VerifyDomain($Domain)
@@ -168,9 +171,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             $domain = MailDomains::Decorator()->getDomainsManager()->getDomainByName($Domain, 0);
             $registrationDomain = Models\RegistrationUser::where('Domain', $Domain)->first();
             $tenant = Core::getInstance()->getTenantsManager()->getTenantByName($Domain);
-            if ($domain || $registrationDomain || $tenant) {
-                throw new \Aurora\System\Exceptions\ApiException(\Aurora\Modules\MailDomains\Enums\ErrorCodes::DomainExists);
-            } else {
+            if (!$domain && !$registrationDomain && !$tenant) {
                 $mResult = true;
             }
         }
@@ -180,19 +181,17 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
     /**
      * Summary of VerifyEmail
-     * @param mixed $Email
+     * @param string $Email
      * @return bool
      */
     public function VerifyEmail($Email)
     {
-        $mResult = true;
+        $mResult = false;
 
         if (!empty($Email)) {
             $account = Mail::Decorator()->getAccountsManager()->getAccountUsedToAuthorize($Email);
             $registrationEmail = Models\RegistrationUser::where('Email', $Email)->first();
-            if ($account || $registrationEmail) {
-                throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AccountExists);
-            } else {
+            if (!$account && !$registrationEmail) {
                 $mResult = true;
             }
         }

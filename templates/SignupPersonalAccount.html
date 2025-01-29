@@ -1,6 +1,9 @@
 <div class="row login">
 	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LOGIN'}"></label>
-	<div class="value" data-bind="css: {'error': usernameExistError() || usernameBadError()}">
+	<div class="value" data-bind="css: {
+		'error': usernameExistError() || usernameBadError(),
+		'valid': !usernameExistError() && !usernameBadError() && emailApproved()
+		}">
 		<div class="field">
 			<input tabindex="1" class="input username" type="text" spellcheck="false"
 					data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 

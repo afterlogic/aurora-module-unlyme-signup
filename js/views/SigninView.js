@@ -128,7 +128,7 @@ CSigninView.prototype.signIn = function ()
 	let koForFocus = null
 
 	if (!this.loading()) {
-		if (this.accountType() === Enums.UnlymeAccountType.Personal) {
+		if (this.accountType() == Enums.UnlymeAccountType.Personal) {
 			sDomain = this.domains().length > 1 ? this.selectedDomain() : this.domains()[0]
 			const sUsername = this.username().trim()
 			if (sUsername.length === 0) {

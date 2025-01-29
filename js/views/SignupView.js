@@ -7,6 +7,7 @@ var
 	IMask = require('imask'),
 	
 	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
+	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
@@ -37,6 +38,9 @@ function CSignupView()
 	this.domain = ko.observable('')
 	this.code = ko.observable('')
 	this.phone = ko.observable('')
+
+	this.emailApproved = ko.observable(false)
+	this.businessDomainApproved = ko.observable(false)
 	
 	this.phoneDom = ko.observable(null)
 	
@@ -53,6 +57,7 @@ function CSignupView()
 	this.passwordRepeatError = ko.observable(false)
 	this.usernameExistError = ko.observable(false)
 	this.usernameBadError = ko.observable(false)
+	this.codeError = ko.observable(false)
 
 	this.loading = ko.observable(false)
 
@@ -97,7 +102,7 @@ function CSignupView()
 	}, this);
 
 	this.registerAccountCommand = Utils.createCommand(this, this.registerAccount, this.notloading)
-	this.confirmCommand = Utils.createCommand(this, this.signUp, this.notloading)
+	this.confirmCommand = Utils.createCommand(this, this.confirmRegistration, this.notloading)
 	this.registerDomainCommand = Utils.createCommand(this, this.registerDomain, this.notloading)
 	
 	this.bRtl = UserSettings.IsRTL
@@ -110,12 +115,6 @@ function CSignupView()
 
 	this.phonePrefixes = Settings.PhonePrefixes
 	this.selectedPhonePrefix = ko.observable('')
-
-	this.accountType.subscribe(function () {
-		this.username('');
-		this.password('');
-		this.passwordRepeat('');
-	}, this)
 
 	this.init()
 
@@ -135,6 +134,15 @@ CSignupView.prototype.onBind = function ()
 }
 CSignupView.prototype.init = function ()
 {
+	// reset fields that are used on both forms
+	this.accountType.subscribe(function () {
+		this.username('');
+		this.password('');
+		this.passwordRepeat('');
+		this.passwordRepeat('');
+		// this.domain('');
+	}, this)
+
 	// reset errors on change input values
 	this.username.subscribe(function () {
 		this.usernameBadError(false)
@@ -149,6 +157,9 @@ CSignupView.prototype.init = function ()
 	this.passwordRepeat.subscribe(function () {
 		this.passwordRepeatError(false)
 	}, this)
+	this.code.subscribe(function () {
+		this.codeError(false)
+	}, this)
 
 	this.phoneDom.subscribe(function (element) {
 		const maskOptions = {
@@ -156,6 +167,42 @@ CSignupView.prototype.init = function ()
 			lazy: false,
 		}
 		IMask.default(element[0], maskOptions)
+	}, this)
+
+	//we can't put Ajax.send directly to ko.computed because it causes infinit loop
+	this.email = ko.computed(function () {
+		return this.username() + '@' + this.selectedDomain()
+	}, this)
+
+	this.email.subscribe(function () {
+		if (this.username().length >= 3) {
+			this.emailApproved(false)
+			const sEmail = this.username() + this.selectedDomain()
+			Ajax.send('%ModuleName%', 'VerifyEmail', {'Email': sEmail}, function (oResponse, oRequest) {
+				this.emailApproved(oResponse?.Result ? true : false)
+
+				if (!oResponse?.Result) {
+					this.usernameExistError(true)
+				}
+			}, this)
+		} else {
+			this.emailApproved(false)
+		}
+	}, this)
+
+	this.domain.subscribe(function (v) {
+		if (v.length >= 3) {
+			this.businessDomainApproved(false)
+			Ajax.send('%ModuleName%', 'VerifyDomain', {'Domain': v}, function (oResponse, oRequest) {
+				this.businessDomainApproved(oResponse?.Result ? true : false)
+
+				if (!oResponse?.Result) {
+					this.domainError(true)
+				}
+			}, this)
+		} else {
+			this.businessDomainApproved(false)
+		}
 	}, this)
 }
 
@@ -209,6 +256,8 @@ CSignupView.prototype.validateEmail = function ()
 CSignupView.prototype.validatePassword = function ()
 {
 	let valid = true
+	// TODO: 
+	return valid
 
 	if (this.password().length === 0) {
 		this.passwordFocus(true)
@@ -232,18 +281,8 @@ CSignupView.prototype.validateDomain = function ()
 CSignupView.prototype.setPhonePrefix = function (prefix)
 {
 	this.selectedPhonePrefix(prefix)
+
 }
-
-CSignupView.prototype.registerDomain = function ()
-{
-	if (this.domain().length === 0) {
-		this.domainFocus(true)
-	} else if (this.validateDomain()) {
-		this.businessDomainAccepted(true)
-	}
-}
-
-
 CSignupView.prototype.back = function ()
 {
 	if (this.accountType() == Enums.UnlymeAccountType.Personal && this.personalAccountAccepted()) {
@@ -254,6 +293,35 @@ CSignupView.prototype.back = function ()
 		} else if (this.businessDomainAccepted()) {
 			this.businessDomainAccepted(false)
 		}
+	}
+}
+
+CSignupView.prototype.registerDomain = function ()
+{
+	if (this.domain().length === 0) {
+		this.domainFocus(true)
+	} else if (this.validateDomain()) {
+		const oParameters = {
+			'AccountType': Types.pInt(this.accountType()),
+			'Domain': this.domain(),
+			'Language': $.cookie('aurora-selected-lang') || '',
+		}
+
+		this.loading(true)
+
+		Ajax.send('%ModuleName%', 'Register', oParameters, function (oResponse) {
+			this.loading(false)
+
+			if (oResponse?.Result) {
+				this.registrationUUID(oResponse?.Result)
+
+				if (oParameters.AccountType == Enums.UnlymeAccountType.Personal) {
+					this.personalAccountAccepted(true)
+				} else if (oParameters.AccountType == Enums.UnlymeAccountType.Business) {
+					this.businessDomainAccepted(true)
+				}
+			}
+		}, this)
 	}
 }
 
@@ -286,34 +354,58 @@ CSignupView.prototype.registerAccount = function ()
 		}
 
 		const oParameters = {
-			'Id': this.registrationUUID(),
-			'AccountType': this.accountType(),
+			'UUID': this.registrationUUID(),
+			'AccountType': Types.pInt(this.accountType()),
 			'Email': this.getEmail(),
 			'Password': this.password().trim(),
 			'Phone': this.phone(),
 			'Language': $.cookie('aurora-selected-lang') || '',
 		}
 
-		// App.broadcastEvent('AnonymousUserForm::PopulateFormSubmitParameters', { Module: '%ModuleName%', Parameters: oParameters });
-
 		this.loading(true)
 
-		// Ajax.send('%ModuleName%', 'Register', oParameters, function () {
+		Ajax.send('%ModuleName%', 'Register', oParameters, function (oResponse) {
 			this.loading(false)
 
-			if (this.accountType() == Enums.UnlymeAccountType.Personal) {
-				this.personalAccountAccepted(true)
-			} else if (this.accountType() == Enums.UnlymeAccountType.Business) {
-				this.businessAccountAccepted(true)
+			if (oResponse?.Result) {
+				this.registrationUUID(oResponse?.Result)
+
+				if (oParameters.AccountType == Enums.UnlymeAccountType.Personal) {
+					this.personalAccountAccepted(true)
+				} else if (oParameters.AccountType == Enums.UnlymeAccountType.Business) {
+					this.businessAccountAccepted(true)
+				}
 			}
-		// }, this);
+
+		}, this)
 	}
+}
+
+CSignupView.prototype.confirmRegistration = function ()
+{
+	const oParameters = {
+		'UUID': this.registrationUUID(),
+		'Code': this.code(),
+	}
+
+	this.loading(true)
+
+	Ajax.send('%ModuleName%', 'ConfirmRegistration', oParameters, function (oResponse) {
+		this.loading(false)
+
+		if (oResponse?.Result) {
+			window.location.href = '#' + Settings.HashSigninForm
+		} else {
+			this.codeError(true)
+		}
+
+	}, this);
 }
 
 CSignupView.prototype.getEmail = function ()
 {
 	let sDomain = ''
-	if (this.accountType() === Enums.UnlymeAccountType.Personal) {
+	if (this.accountType() == Enums.UnlymeAccountType.Personal) {
 		sDomain = this.domains().length > 1 ? this.selectedDomain() : this.domains()[0]
 	} else {
 		sDomain = '@' + this.domain().trim()
