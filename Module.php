@@ -211,6 +211,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
         $regUser = Models\RegistrationUser::where('UUID', $UUID)->first();
         $tenantId = 0;
+        $domainId = 0;
         if ($regUser && $this->validateCode($regUser, $Code)) { //TODO: Validate code from sms
             $prevState = Api::skipCheckUserRole(true);
             $oServer = \Aurora\Modules\Mail\Models\Server::where([['OwnerType', '=', \Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin]])->first();
@@ -221,9 +222,14 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $domainId = MailDomains::Decorator()->CreateDomain($tenantId, $serverId, $regUser->Domain);
                     if (!$domainId) {
                         //TODO: Can`t create Domain
+                        if ($tenantId > 0) {
+                            Core::Decorator()->DeleteTenant($tenantId);
+                        }
+                        return false;
                     }
                 } else {
                     //TODO: Cant`t Create Tenant
+                    return false;
                 }
             } elseif ($regUser->AccountType === Enums\AccountType::Personal) {
                 $tenant = \Aurora\Modules\Core\Models\Tenant::whereNull('Properties->BillingUnlyme::IsBusiness')->first();
@@ -245,16 +251,34 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $userId, 
                     '', 
                     $regUser->Email, 
-                    $regUser->Login, 
+                    !empty($regUser->Login) ? $regUser->Login : $regUser->Email, 
                     $regUser->Password
                 );
                 if ($account) {
                     $mResult = true;
                     $regUser->delete();
                 } else {
+                    Core::Decorator()->DeleteUser($userId);
+                    if ($regUser->AccountType === Enums\AccountType::Business ) {
+                        if ($domainId > 0) {
+                            MailDomains::Decorator()->DeleteDomains($tenantId, [$domainId]);
+                        }
+                        if ($tenantId > 0) {
+                            Core::Decorator()->DeleteTenant($tenantId);
+                        }
+                    }
+                    $regUser->delete();
                     //TODO: Can`t create account
                 }
             } else {
+                if ($regUser->AccountType === Enums\AccountType::Business ) {
+                    if ($domainId > 0) {
+                        MailDomains::Decorator()->DeleteDomains($tenantId, [$domainId]);
+                    }
+                    if ($tenantId > 0) {
+                        Core::Decorator()->DeleteTenant($tenantId);
+                    }
+                }
                 //TODO: Can`t create user
             }
             \Aurora\Api::skipCheckUserRole($prevState);
