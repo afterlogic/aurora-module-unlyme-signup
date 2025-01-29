@@ -15,4 +15,7 @@
 	<button type="submit" tabindex="2" class="button primary" data-bind="i18n: {'key': '%MODULENAME%/BUTTON_CONFIRM'}, command: confirmCommand"></button>
 </div>
 
-<div data-bind="i18n: {key: '%MODULENAME%/HINT_RESENT_VERIFICATION_CODE', type: 'html'}"></div>
+<div>
+	<span data-bind="i18n: {key: '%MODULENAME%/HINT_RESENT_VERIFICATION_CODE'}"></span>
+	<span class="link" data-bind="text: timerText, click: resendCode"></span>
+</div>

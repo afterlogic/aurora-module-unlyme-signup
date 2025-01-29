@@ -137,34 +137,32 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $sendCode = false;
 
         if($AccountType === Enums\AccountType::Business) {
-            if (empty($UUID)) {
-                if (self::Decorator()->VerifyDomain($Domain)) {
-                    $regUser = Models\RegistrationUser::create([
-                        'Domain' => $Domain,
-                        'AccountType' => $AccountType,
-                        'Language' => $Language
-                    ]);
-                }
-            } elseif (self::Decorator()->VerifyEmail($Email)) {
-                $regUser = Models\RegistrationUser::where('UUID', $UUID)->first();
-                if ($regUser) {
-                    $regUser->Phone = $Phone;
+            $regUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
+
+            if ($regUser) {
+                if ($Domain && self::Decorator()->VerifyDomain($Domain)) {
+                    $regUser->Domain = $Domain;
+                    $regUser->AccountType = $AccountType;
+
+                    $sendCode = $regUser->save();
+                } else if ($Email && self::Decorator()->VerifyEmail($Email)) {
                     $regUser->Email = $Email;
+                    $regUser->AccountType = $AccountType;
+                    $regUser->Phone = $Phone;
                     $regUser->Login = $Login;
                     $regUser->Password = $Password;
                     $regUser->Language = $Language;
 
                     $sendCode = $regUser->save();
                 }
-
             }
         } elseif ($AccountType === Enums\AccountType::Personal) {
-            if (self::Decorator()->VerifyEmail($Email)) {
-                $regUser = new Models\RegistrationUser();
+            $regUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
+
+            if ($regUser && self::Decorator()->VerifyEmail($Email)) {
                 $regUser->AccountType = $AccountType;
                 $regUser->Phone = $Phone;
                 $regUser->Email = $Email;
-                $regUser->Login = $Login;
                 $regUser->Password = $Password;
                 $regUser->Language = $Language;
 
@@ -197,7 +195,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         $mResult = false;
 
-        if (!empty($Domain)) {
+        if (!!filter_var($Domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) && strpos($Domain, '.') !== false) {
             $domain = MailDomains::Decorator()->getDomainsManager()->getDomainByName($Domain, 0);
             $registrationDomain = Models\RegistrationUser::where('Domain', $Domain)->first();
             $tenant = Core::getInstance()->getTenantsManager()->getTenantByName($Domain);

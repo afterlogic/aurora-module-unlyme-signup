@@ -8,6 +8,7 @@ var
 	
 	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
+	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
@@ -104,12 +105,20 @@ function CSignupView()
 	this.confirmCommand = Utils.createCommand(this, this.confirmRegistration, this.notloading)
 	this.registerDomainCommand = Utils.createCommand(this, this.registerDomain, this.notloading)
 	
+	this.timerObject = ko.observable(null)
+	this.timerSeconds = ko.observable(0)
+	this.timerText = ko.computed(function () {
+		const seconds = this.timerSeconds()
+		const time = '0:' + (seconds < 10 ? '0' + seconds : seconds)
+		return TextUtils.i18n('%MODULENAME%/BUTTON_RESENT_VERIFICATION_CODE', { SECONDS: time })
+	}, this)
+
 	this.bRtl = UserSettings.IsRTL
 	this.aLanguages = UserSettings.LanguageList
 	this.currentLanguage = ko.observable(UserSettings.Language)
 	this.bAllowChangeLanguage = Settings.AllowChangeLanguage && !App.isMobile()
 
-	this.domains = ko.observableArray(Settings.PersonalDomains)
+	this.domains = ko.observableArray([])
 	this.selectedDomain = ko.observable('')
 
 	this.phonePrefixes = Settings.PhoneCountryCodes
@@ -139,7 +148,8 @@ CSignupView.prototype.init = function ()
 		this.password('');
 		this.passwordRepeat('');
 		this.passwordRepeat('');
-		// this.domain('');
+		this.domain('');
+		this.registrationUUID('');
 	}, this)
 
 	// reset errors on change input values
@@ -190,7 +200,7 @@ CSignupView.prototype.init = function ()
 	}, this)
 
 	this.domain.subscribe(function (v) {
-		if (v.length >= 3) {
+		if (this.validateDomain(v)) {
 			this.businessDomainApproved(false)
 			Ajax.send('%ModuleName%', 'VerifyDomain', {'Domain': v}, function (oResponse, oRequest) {
 				this.businessDomainApproved(oResponse?.Result ? true : false)
@@ -216,6 +226,7 @@ CSignupView.prototype.onShow = function ()
 		}
 	},this), 1)
 
+	this.domains(Settings.PersonalDomains.map(domain => '@' + domain))
 	this.selectedPhonePrefix(this.phonePrefixes[0])
 	this.selectedDomain(this.domains()[0])
 }
@@ -272,10 +283,21 @@ CSignupView.prototype.validatePassword = function ()
 
 	return valid
 }
+
 CSignupView.prototype.validateDomain = function ()
 {
-	const valid = this.domain().indexOf('.') >= 0
-	this.domainError(!valid)
+	let valid = false
+
+	if (this.domain().length === 0 || this.domain().indexOf('.') <= 0) {
+		this.domainFocus(true)
+	} else {
+		const regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/
+		valid = regex.test(this.domain())
+
+		if (!valid) {
+			this.domainFocus(true)
+		}
+	}
 
 	return valid
 }
@@ -283,13 +305,67 @@ CSignupView.prototype.validateDomain = function ()
 CSignupView.prototype.setPhonePrefix = function (prefix)
 {
 	this.selectedPhonePrefix(prefix)
-
 }
+
+// functon that counts down seconds
+CSignupView.prototype.setTimer = function ()
+{
+	console.log('setTimer', this.timerObject())
+	if (!this.timerObject()) {
+		const seconds = 60
+		let counter = seconds
+		let timer = setInterval(_.bind(function () {
+			if (counter === 0) {
+				this.resetTimer()
+			} else {
+				counter--
+			}
+			this.timerSeconds(counter)
+		}, this), 1000)
+
+		this.timerObject(timer)
+	}
+}
+
+CSignupView.prototype.resetTimer = function ()
+{
+	if (this.timerObject()) {
+		clearInterval(this.timerObject())
+		// this.timerObject(null)
+	}
+	this.timerSeconds(0)
+}
+
+CSignupView.prototype.resendCode = function ()
+{
+	if (this.timerSeconds() === 0) {
+		const oParameters = {
+			'UUID': this.registrationUUID(),
+		}
+	
+		this.loading(true)
+	
+		Ajax.send('%ModuleName%', 'ResendCode', oParameters, function (oResponse) {
+			this.loading(false)
+	
+			if (oResponse?.Result) {
+				this.setTimer()
+			} else {
+				console.log('ResendCode error', oResponse)
+			}
+		}, this)
+	}
+}
+
 CSignupView.prototype.back = function ()
 {
 	if (this.accountType() == Enums.UnlymeAccountType.Personal && this.personalAccountAccepted()) {
 		this.personalAccountAccepted(false)
+		this.code('')
+		this.resetTimer()
 	} else if (this.accountType() == Enums.UnlymeAccountType.Business) {
+		this.code('')
+		this.resetTimer()
 		if (this.businessAccountAccepted()) {
 			this.businessAccountAccepted(false)
 		} else if (this.businessDomainAccepted()) {
@@ -304,6 +380,7 @@ CSignupView.prototype.registerDomain = function ()
 		this.domainFocus(true)
 	} else if (this.validateDomain()) {
 		const oParameters = {
+			'UUID': this.registrationUUID(),
 			'AccountType': Types.pInt(this.accountType()),
 			'Domain': this.domain(),
 			'Language': $.cookie('aurora-selected-lang') || '',
@@ -370,6 +447,7 @@ CSignupView.prototype.registerAccount = function ()
 
 			if (oResponse?.Result) {
 				this.registrationUUID(oResponse?.Result)
+				this.setTimer()
 
 				if (oParameters.AccountType == Enums.UnlymeAccountType.Personal) {
 					this.personalAccountAccepted(true)
@@ -377,7 +455,6 @@ CSignupView.prototype.registerAccount = function ()
 					this.businessAccountAccepted(true)
 				}
 			}
-
 		}, this)
 	}
 }
