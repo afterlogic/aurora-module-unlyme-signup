@@ -9,8 +9,6 @@ namespace Aurora\Modules\UnlymeSignup;
 
 use Aurora\System\Api;
 use Aurora\System\Enums\UserRole;
-use Illuminate\Support\Str;
-use Aurora\System\Utils;
 use Aurora\Modules\MailDomains\Module as MailDomains;
 use Aurora\Modules\Core\Module as Core;
 use Aurora\Modules\Mail\Module as Mail;
@@ -28,6 +26,8 @@ use Aurora\Modules\Mail\Module as Mail;
  */
 class Module extends \Aurora\System\Module\AbstractWebclientModule
 {
+    protected $twilioClient;
+
     /***** public functions might be called with web API *****/
     /**
      * @return Module
@@ -115,26 +115,29 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     ]);
                 }
             } elseif (self::Decorator()->VerifyEmail($Email)) {
-                Models\RegistrationUser::where('UUID', $UUID)->update([
-                    'Phone' => $Phone,
-                    'Email' => $Email,
-                    'Login' => $Login,
-                    'Password' => Utils::EncryptValue(Str::random(6) . $Password),
-                    'Language' => $Language
-                ]);
-                $sendCode = true;
+                $regUser = Models\RegistrationUser::where('UUID', $UUID)->first();
+                if ($regUser) {
+                    $regUser->Phone = $Phone;
+                    $regUser->Email = $Email;
+                    $regUser->Login = $Login;
+                    $regUser->Password = $Password;
+                    $regUser->Language = $Language;
+
+                    $sendCode = $regUser->save();
+                }
+
             }
         } elseif ($AccountType === Enums\AccountType::Personal) {
             if (self::Decorator()->VerifyEmail($Email)) {
-                $regUser = Models\RegistrationUser::create([
-                    'AccoutType' => $AccountType,
-                    'Phone' => $Phone,
-                    'Email' => $Email,
-                    'Login' => $Login,
-                    'Password' => Utils::EncryptValue(Str::random(6) . $Password),
-                    'Language' => $Language
-                ]);
-                $sendCode = true;
+                $regUser = new Models\RegistrationUser();
+                $regUser->AccountType = $AccountType;
+                $regUser->Phone = $Phone;
+                $regUser->Email = $Email;
+                $regUser->Login = $Login;
+                $regUser->Password = $Password;
+                $regUser->Language = $Language;
+
+                $sendCode = $regUser->save();
             }
         }
 
@@ -209,7 +212,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
         $regUser = Models\RegistrationUser::where('UUID', $UUID)->first();
         $tenantId = 0;
-        if ($regUser && $this->validateCode($regUser->Phone, $Code)) { //TODO: Validate code from sms
+        if ($regUser && $this->validateCode($regUser, $Code)) { //TODO: Validate code from sms
             $prevState = Api::skipCheckUserRole(true);
             $oServer = \Aurora\Modules\Mail\Models\Server::where([['OwnerType', '=', \Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin]])->first();
             $serverId = $oServer ? $oServer->Id : 0;
@@ -285,8 +288,21 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     protected function sendCode($RegUser) 
     {
         if (!empty($RegUser->Phone)) {
-            $RegUser->LastSentCodeTime = time();
-            $RegUser->save();
+            $twilio = $this->getTwilioClient();
+            if ($twilio) {
+                $twilioConfig = $this->getConfig('Twilio');
+                $verification = $twilio->verify->v2
+                    ->services($twilioConfig['ServiceId'])
+                    ->verifications->create(
+                        $RegUser->Phone, // To
+                        "sms" // Channel
+                    );
+
+                if ($verification && $verification->sid) {
+                    $RegUser->LastSentCodeTime = time();
+                    $RegUser->save();
+                }
+            }
         }
 
         return true;
@@ -294,6 +310,32 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
     protected function validateCode($RegUser, $Code) 
     {
-        return $Code == 123456;
+        $mResult = false;
+
+        $twilio = $this->getTwilioClient();
+        if ($twilio) {
+            $twilioConfig = $this->getConfig('Twilio');
+            $verification_check = $twilio->verify->v2
+                ->services($twilioConfig['ServiceId'])
+                ->verificationChecks->create([
+                    "to" => $RegUser->Phone,
+                    "code" => $Code,
+                ]);
+    
+            $mResult = $verification_check && $verification_check->status === 'approved';
+        }
+
+        return $mResult;
+    }
+
+    protected function getTwilioClient()
+    {
+        if (!$this->twilioClient) {
+            $twilioConfig = $this->getConfig('Twilio');
+            if (is_array($twilioConfig) && !empty($twilioConfig['AccountSID']) && !empty($twilioConfig['AuthToken'] && !empty($twilioConfig['ServiceId'])))
+            $this->twilioClient = new \Twilio\Rest\Client($twilioConfig['AccountSID'], $twilioConfig['AuthToken']);
+        }
+
+        return $this->twilioClient;
     }
 }

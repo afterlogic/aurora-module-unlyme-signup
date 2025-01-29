@@ -3,7 +3,8 @@
 	"type": "aurora-module",
 	"require": {
 		"php": ">=7.4.0",
-		"afterlogic/aurora-framework": "~0.10.0"
+		"afterlogic/aurora-framework": "~0.10.0",
+		"twilio/sdk": "^8.3"
 	},
 	"autoload": {
 		"classmap": ["/"]

@@ -87,6 +87,16 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 "Enables changing language on login page",
             ),
+            "Twilio" => new SettingsProperty(
+                [
+                    "AccountSID" => "",
+                    "AuthToken" => "",
+                    "ServiceId" => ""
+                ],
+                "array",
+                null,
+                "Enables changing language on login page",
+            ),
         ];
     }
 }
