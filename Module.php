@@ -27,6 +27,7 @@ use Aurora\Modules\Mail\Module as Mail;
 class Module extends \Aurora\System\Module\AbstractWebclientModule
 {
     protected $twilioClient;
+    protected $domainId;
 
     /***** public functions might be called with web API *****/
     /**
@@ -51,6 +52,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     public function getModuleSettings()
     {
         return $this->oModuleSettings;
+    }
+
+    public function init()
+    {
+        $this->subscribeEvent('Core::CreateUser::before', array($this, 'onBeforeCreateUser'));
     }
 
     /**
@@ -259,8 +265,15 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 $tenant = \Aurora\Modules\Core\Models\Tenant::whereNull('Properties->BillingUnlyme::IsBusiness')->first();
                 if ($tenant) {
                     $tenantId = $tenant->Id;
+                    
+                    $domainName = explode('@', $regUser->Email)[1];
+                    $domain = MailDomains::getInstance()->getDomainsManager()->getDomainByName($domainName, $tenant->Id);
+                    if ($domain) {
+                        $domainId = $domain->Id;
+                    }
                 }
             }
+            $this->domainId = $domainId;
             $userId = Core::Decorator()->CreateUser($tenantId, $regUser->Email);
             if ($userId) {
                 $oUser = Core::Decorator()->GetUser($userId);
@@ -382,5 +395,17 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         }
 
         return $this->twilioClient;
+    }
+
+    /**
+     * This subscruption adds Domain parameter to the CreateUser request.
+     * This way it emmulates the adding the parameter by MtaConnector module.
+     */
+    public function onBeforeCreateUser($aArgs, &$mResult)
+    {
+        if ($this->domainId) {
+            $aArgs['Domain'] = $this->domainId;
+            // $aArgs['QuotaBytes'] = $this->domainId; // Most lilely it should be added by other module
+        }
     }
 }
