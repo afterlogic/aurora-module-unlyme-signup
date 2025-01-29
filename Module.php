@@ -76,6 +76,28 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     }
 
     /**
+     * Obtains list of mail domains of Default tenant.
+     *
+     * @return array
+     */
+    public function GetPersonalDomains()
+    {
+        $domains = [];
+
+        $tenant = \Aurora\Modules\Core\Models\Tenant::whereNull('Properties->BillingUnlyme::IsBusiness')->first();
+        if ($tenant) {
+            $domains = MailDomains::getInstance()->getDomainsManager()->getDomainsByTenantId($tenant->Id)->toArray();
+        }
+
+        // pick domain names only
+        $domains = array_map(function ($domain) {
+            return $domain['Name'];
+        }, $domains);
+
+        return $domains;
+    }
+
+    /**
      * @param mixed $Login
      * @param mixed $Password
      * @param mixed $Language

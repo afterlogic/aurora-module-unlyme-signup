@@ -50,6 +50,11 @@ module.exports = {
 			code: '+1',
 			icon: 'us',
 		},
+		{
+			name: 'Russia',
+			code: '+7',
+			icon: 'ru',
+		},
 	],
 	
 	/**

@@ -31,11 +31,10 @@ function CSignupView()
 	
 	this.registrationUUID = ko.observable('')
 	this.accountType = ko.observable(Enums.UnlymeAccountType.Personal)
-	this.username = ko.observable('')
-	this.login = ko.observable('')
+	this.username = ko.observable('').extend({ rateLimit: 500 })
 	this.password = ko.observable('')
 	this.passwordRepeat = ko.observable('')
-	this.domain = ko.observable('')
+	this.domain = ko.observable('').extend({ rateLimit: 500 })
 	this.code = ko.observable('')
 	this.phone = ko.observable('')
 
@@ -114,7 +113,7 @@ function CSignupView()
 	this.selectedDomain = ko.observable('')
 
 	this.phonePrefixes = Settings.PhonePrefixes
-	this.selectedPhonePrefix = ko.observable('')
+	this.selectedPhonePrefix = ko.observable(null)
 
 	this.init()
 
@@ -217,7 +216,16 @@ CSignupView.prototype.onShow = function ()
 		}
 	},this), 1)
 
-	this.domains(['@unlymemail.com', '@unlymemail.ch', '@unly.me']);
+	Ajax.send('%ModuleName%', 'GetPersonalDomains', {}, function (oResponse, oRequest) {
+		this.businessDomainApproved(oResponse?.Result ? true : false)
+
+		if (oResponse?.Result) {
+			this.domains(Types.pArray(oResponse.Result))
+		}
+	}, this)
+	
+
+	// this.domains(['@unlymemail.com', '@unlymemail.ch', '@unly.me', '@afterlogic.com']);
 
 	this.selectedPhonePrefix(this.phonePrefixes[0])
 	this.selectedDomain(this.domains()[0])
@@ -230,6 +238,18 @@ CSignupView.prototype.onShow = function ()
 	// }, this);
 }
 
+CSignupView.prototype.validatePhone = function ()
+{
+	let valid = true
+
+	if (this.phone().length === 0 || !this.selectedPhonePrefix()) {
+		this.phoneFocus(true)
+		valid = false
+	}
+
+	return valid
+}
+
 CSignupView.prototype.validateEmail = function ()
 {
 	let valid = true
@@ -240,10 +260,10 @@ CSignupView.prototype.validateEmail = function ()
 	}
 
 	if (this.accountType() == Enums.UnlymeAccountType.Personal) {
-		if (this.getEmail().indexOf('test') >= 0) {
-			valid = false
-			this.usernameExistError(!valid)
-		}
+		// if (this.getEmail().indexOf('test') >= 0) {
+		// 	valid = false
+		// 	this.usernameExistError(!valid)
+		// }
 	}
 
 	if (this.getEmail().indexOf('bad') >= 0) {
@@ -332,9 +352,8 @@ CSignupView.prototype.registerAccount = function ()
 		if (!this.validateEmail()) {
 			return
 		}
-
-		if (this.phone().length === 0) {
-			this.phoneFocus(true)
+		
+		if (!this.validatePhone()) {
 			return
 		}
 
@@ -358,7 +377,7 @@ CSignupView.prototype.registerAccount = function ()
 			'AccountType': Types.pInt(this.accountType()),
 			'Email': this.getEmail(),
 			'Password': this.password().trim(),
-			'Phone': this.phone(),
+			'Phone': this.selectedPhonePrefix().code + this.phone(),
 			'Language': $.cookie('aurora-selected-lang') || '',
 		}
 
