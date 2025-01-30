@@ -136,15 +136,14 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $regUser = null;
         $sendCode = false;
 
+        $regUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
         if($AccountType === Enums\AccountType::Business) {
-            $regUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
-
             if ($regUser) {
                 if ($Domain && self::Decorator()->VerifyDomain($Domain)) {
                     $regUser->Domain = $Domain;
                     $regUser->AccountType = $AccountType;
 
-                    $sendCode = $regUser->save();
+                    $regUser->save();
                 } else if ($Email && self::Decorator()->VerifyEmail($Email)) {
                     $regUser->Email = $Email;
                     $regUser->AccountType = $AccountType;
@@ -157,8 +156,6 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 }
             }
         } elseif ($AccountType === Enums\AccountType::Personal) {
-            $regUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
-
             if ($regUser && self::Decorator()->VerifyEmail($Email)) {
                 $regUser->AccountType = $AccountType;
                 $regUser->Phone = $Phone;
