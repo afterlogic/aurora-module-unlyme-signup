@@ -171,6 +171,8 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 $regUser->UUID = $regUser->generateUUID();
                 $regUser->save();
                 $mResult = $regUser->UUID;
+            } else {
+                $mResult = $regUser->UUID;
             }
 
             if ($sendCode) {
