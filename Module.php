@@ -137,14 +137,14 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $sendCode = false;
 
         $regUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
-        if($AccountType === Enums\AccountType::Business) {
-            if ($regUser) {
+        if ($regUser) {
+            if($AccountType === Enums\AccountType::Business) {
                 if ($Domain && self::Decorator()->VerifyDomain($Domain)) {
                     $regUser->Domain = $Domain;
                     $regUser->AccountType = $AccountType;
 
                     $regUser->save();
-                } else if ($Email && self::Decorator()->VerifyEmail($Email)) {
+                } else if ( $Email && ($regUser->Email === $Email || self::Decorator()->VerifyEmail($Email)) ) { // check email only if it was changed
                     $regUser->Email = $Email;
                     $regUser->AccountType = $AccountType;
                     $regUser->Phone = $Phone;
@@ -154,30 +154,31 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
                     $sendCode = $regUser->save();
                 }
+            } elseif ($AccountType === Enums\AccountType::Personal) {
+                // check email only if it was changed
+                if ( $Email && ($regUser->Email === $Email || self::Decorator()->VerifyEmail($Email)) ) {
+                    $regUser->AccountType = $AccountType;
+                    $regUser->Phone = $Phone;
+                    $regUser->Email = $Email;
+                    $regUser->Password = $Password;
+                    $regUser->Language = $Language;
+
+                    $sendCode = $regUser->save();
+                }
             }
-        } elseif ($AccountType === Enums\AccountType::Personal) {
-            if ($regUser && self::Decorator()->VerifyEmail($Email)) {
-                $regUser->AccountType = $AccountType;
-                $regUser->Phone = $Phone;
-                $regUser->Email = $Email;
-                $regUser->Password = $Password;
-                $regUser->Language = $Language;
 
-                $sendCode = $regUser->save();
+            if (empty($regUser->UUID)) {
+                $regUser->UUID = $regUser->generateUUID();
+                $regUser->save();
+                $mResult = $regUser->UUID;
+            }
+
+            if ($sendCode) {
+                $this->sendCode($regUser);
+                $mResult = $regUser->UUID;
             }
         }
-
-        if ($regUser && empty($regUser->UUID)) {
-            $regUser->UUID = $regUser->generateUUID();
-            $regUser->save();
-            $mResult = $regUser->UUID;
-        }
-
-        if ($sendCode) {
-            $this->sendCode($regUser);
-            $mResult = $regUser->UUID;
-        }
-
+        
         return $mResult;
     }
 
