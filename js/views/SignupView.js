@@ -109,8 +109,8 @@ function CSignupView()
 	this.timerSeconds = ko.observable(0)
 	this.timerText = ko.computed(function () {
 		const seconds = this.timerSeconds()
-		const time = '0:' + (seconds < 10 ? '0' + seconds : seconds)
-		return TextUtils.i18n('%MODULENAME%/BUTTON_RESENT_VERIFICATION_CODE', { SECONDS: time })
+		const timer = seconds === 0 ? '' : (' (0:' + (seconds < 10 ? '0' + seconds : seconds) + ')')
+		return TextUtils.i18n('%MODULENAME%/BUTTON_RESENT_VERIFICATION_CODE', { TIMER: timer })
 	}, this)
 
 	this.bRtl = UserSettings.IsRTL
@@ -307,13 +307,15 @@ CSignupView.prototype.setPhonePrefix = function (prefix)
 	this.selectedPhonePrefix(prefix)
 }
 
-// functon that counts down seconds
+/**
+ *  The functon creates countdown timer
+ */
 CSignupView.prototype.setTimer = function ()
 {
-	console.log('setTimer', this.timerObject())
 	if (!this.timerObject()) {
 		const seconds = 60
 		let counter = seconds
+		this.timerSeconds(counter)
 		let timer = setInterval(_.bind(function () {
 			if (counter === 0) {
 				this.resetTimer()
@@ -327,11 +329,15 @@ CSignupView.prototype.setTimer = function ()
 	}
 }
 
+/**
+ *  The functon resets countdown timer
+ */
+
 CSignupView.prototype.resetTimer = function ()
 {
 	if (this.timerObject()) {
 		clearInterval(this.timerObject())
-		// this.timerObject(null)
+		this.timerObject(null)
 	}
 	this.timerSeconds(0)
 }
@@ -461,6 +467,11 @@ CSignupView.prototype.registerAccount = function ()
 
 CSignupView.prototype.confirmRegistration = function ()
 {
+	if (this.code().length === 0) {
+		this.codeFocus(true)
+		return
+	}
+
 	const oParameters = {
 		'UUID': this.registrationUUID(),
 		'Code': this.code(),
