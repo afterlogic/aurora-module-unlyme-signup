@@ -269,8 +269,6 @@ CSignupView.prototype.validateEmail = function ()
 CSignupView.prototype.validatePassword = function ()
 {
 	let valid = true
-	// TODO: 
-	return valid
 
 	if (this.password().length === 0) {
 		this.passwordFocus(true)
