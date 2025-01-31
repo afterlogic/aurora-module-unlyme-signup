@@ -226,9 +226,11 @@ CSignupView.prototype.onShow = function ()
 		}
 	},this), 1)
 
-	this.domains(Settings.PersonalDomains.map(domain => '@' + domain))
+	if (Settings.PersonalDomains.length > 0) {
+		this.domains(Settings.PersonalDomains.map(domain => '@' + domain))
+		this.selectedDomain(this.domains()[0])
+	}
 	this.selectedPhonePrefix(this.phonePrefixes[0])
-	this.selectedDomain(this.domains()[0])
 }
 
 CSignupView.prototype.validatePhone = function ()

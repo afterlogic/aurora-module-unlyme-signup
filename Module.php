@@ -93,7 +93,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         $domains = [];
 
-        $tenant = \Aurora\Modules\Core\Models\Tenant::whereNull('Properties->UnlymeBilling::IsBusiness')->first();
+        $tenant = $this->getDefaultTenant();
         if ($tenant) {
             $domains = MailDomains::getInstance()->getDomainsManager()->getDomainsByTenantId($tenant->Id)->toArray();
         }
@@ -261,7 +261,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     return false;
                 }
             } elseif ($regUser->AccountType === Enums\AccountType::Personal) {
-                $tenant = \Aurora\Modules\Core\Models\Tenant::whereNull('Properties->UnlymeBilling::IsBusiness')->first();
+                $tenant = $this->getDefaultTenant();
                 if ($tenant) {
                     $tenantId = $tenant->Id;
                     
@@ -397,6 +397,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         }
 
         return $this->twilioClient;
+    }
+
+    protected function getDefaultTenant()
+    {
+        return \Aurora\Modules\Core\Models\Tenant::where('Properties->UnlymeBilling::IsBusiness', null)->orWhere('Properties->UnlymeBilling::IsBusiness', false)->first();
     }
 
     public function onBeforeCreateTenant($aArgs, &$mResult)

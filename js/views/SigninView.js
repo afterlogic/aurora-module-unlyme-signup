@@ -99,17 +99,10 @@ CSigninView.prototype.onShow = function ()
 		}
 	},this), 1)
 
-	this.domains(['@unlymemail.com', '@unlymemail.ch', '@unly.me'])
-
-	this.selectedDomain(this.domains()[0])
-
-	// Ajax.send('%ModuleName%', 'GetMailDomains', {}, function (oResponse, oRequest) {
-	// 	if (_.isArray(oResponse.Result))
-	// 	{
-	// 		this.domains(oResponse.Result);
-	// 	}
-	// }, this);
-
+	if (Settings.PersonalDomains.length > 0) {
+		this.domains(Settings.PersonalDomains.map(domain => '@' + domain))
+		this.selectedDomain(this.domains()[0])
+	}
 }
 
 /**
