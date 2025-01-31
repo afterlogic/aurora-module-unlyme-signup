@@ -28,6 +28,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 {
     protected $twilioClient;
     protected $domainId;
+    protected $customCreateTenant = false;
 
     /***** public functions might be called with web API *****/
     /**
@@ -246,8 +247,13 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             $oServer = \Aurora\Modules\Mail\Models\Server::where([['OwnerType', '=', \Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin]])->first();
             $serverId = $oServer ? $oServer->Id : 0;
             if ($regUser->AccountType === Enums\AccountType::Business) {
+                $this->customCreateTenant = true;
                 $tenantId = Core::Decorator()->CreateTenant(0, $regUser->Domain);
+                $this->customCreateTenant = false;
                 if ($tenantId) {
+                    $oTenant = Api::getTenantById($tenantId);
+                    $oSettings = \Aurora\Modules\Core\Module::getInstance()->getModuleSettings();
+                    $oSettings->SaveTenantSettings($oTenant->Name, [ 'SiteName' => '' ]);
                     $domainId = MailDomains::Decorator()->CreateDomain($tenantId, $serverId, $regUser->Domain);
                     if (!$domainId) {
                         //TODO: Can`t create Domain
@@ -404,9 +410,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         return \Aurora\Modules\Core\Models\Tenant::where('Properties->UnlymeBilling::IsBusiness', null)->orWhere('Properties->UnlymeBilling::IsBusiness', false)->first();
     }
 
-    public function onBeforeCreateTenant($aArgs, &$mResult)
+    public function onBeforeCreateTenant(&$aArgs, &$mResult)
     {
-        if ($this->domainId) {
+        if ($this->customCreateTenant) {
             $aArgs['UnlymeBusiness'] = true;
         }
     }
