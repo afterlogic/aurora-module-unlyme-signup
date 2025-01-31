@@ -123,6 +123,7 @@ function CSignupView()
 
 	this.phonePrefixes = Settings.PhoneCountryCodes
 	this.selectedPhonePrefix = ko.observable(null)
+	this.maskObject = null
 
 	this.init()
 
@@ -170,12 +171,17 @@ CSignupView.prototype.init = function ()
 		this.codeError(false)
 	}, this)
 
+	this.selectedPhonePrefix.subscribe(function (v) {
+		const mask = '0'.repeat(4 - v?.code?.length + 1) + '-000-00-00'
+		this.maskObject.updateOptions({mask: mask})
+	}, this)
+
 	this.phoneDom.subscribe(function (element) {
 		const maskOptions = {
-			mask: '000-000-00-00',
+			mask: '000-00-00',
 			lazy: false,
 		}
-		IMask.default(element[0], maskOptions)
+		this.maskObject = IMask.default(element[0], maskOptions)
 	}, this)
 
 	//we can't put Ajax.send directly to ko.computed because it causes infinit loop
