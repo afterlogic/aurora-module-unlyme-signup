@@ -101,6 +101,23 @@ function CSignupView()
 		return screenToShow
 	}, this);
 
+	this.screenToShow.subscribe(function (v) {
+		switch (v) {
+			case Enums.SignupScreen.PersonalAccount:
+				this.usernameFocus(true)
+				break
+			case Enums.SignupScreen.BusinessDomain:
+				this.domainFocus(true)
+				break
+			case Enums.SignupScreen.BusinessAccount:
+				this.usernameFocus(true)
+				break
+			case Enums.SignupScreen.Confirmation:
+				this.codeFocus(true)
+		}
+		console.log(v)
+	}, this)
+
 	this.registerAccountCommand = Utils.createCommand(this, this.registerAccount, this.notloading)
 	this.confirmCommand = Utils.createCommand(this, this.confirmRegistration, this.notloading)
 	this.registerDomainCommand = Utils.createCommand(this, this.registerDomain, this.notloading)
@@ -178,7 +195,7 @@ CSignupView.prototype.init = function ()
 
 	this.phoneDom.subscribe(function (element) {
 		const maskOptions = {
-			mask: '000-00-00',
+			mask: '0'.repeat(4 - this.selectedPhonePrefix()?.code?.length + 1) + '-000-00-00',
 			lazy: false,
 		}
 		this.maskObject = IMask.default(element[0], maskOptions)
