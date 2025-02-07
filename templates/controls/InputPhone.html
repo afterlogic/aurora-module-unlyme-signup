@@ -1,7 +1,7 @@
 <div class="row phone">
 	<label class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PHONE'}"></label>
 	<div class="value">
-		<span class="custom_selector phone-prefix" data-bind="dropdown: {'control': false}">
+		<!-- <span class="custom_selector phone-prefix" data-bind="dropdown: {'control': false}">
 			<span class="name">
 				<span class="icon" data-bind="css: selectedPhonePrefix() ? selectedPhonePrefix().icon : ''"></span>
 				<span class="text" data-bind="text: selectedPhonePrefix() ? selectedPhonePrefix().code : ''"></span>
@@ -11,7 +11,7 @@
 			</span>
 			<span class="dropdown">
 				<span class="dropdown_helper">
-					<!-- <span class="dropdown_arrow"><span></span></span> -->
+					<span class="dropdown_arrow"><span></span></span>
 					<span class="dropdown_content" data-bind="foreach: phonePrefixes">
 						<span class="item" data-bind="css: $parent.selectedPhonePrefix() && $parent.selectedPhonePrefix().code === code ? ' selected' : '',
 							click: function () { $parent.setPhonePrefix($data); }">
@@ -21,7 +21,7 @@
 					</span>
 				</span>
 			</span>
-		</span>
+		</span> -->
 		<input tabindex="2" class="input phone" type="text" spellcheck="false"
 				data-bind="value: phone, hasfocus: phoneFocus, valueUpdate: 'afterkeydown', 
 				i18n: {'key': '%MODULENAME%/PLACEHOLDER_PHONE', 'type': 'placeholder'}, initDom: phoneDom" />

@@ -138,8 +138,8 @@ function CSignupView()
 	this.domains = ko.observableArray([])
 	this.selectedDomain = ko.observable('')
 
-	this.phonePrefixes = Settings.PhoneCountryCodes
-	this.selectedPhonePrefix = ko.observable(null)
+	// this.phonePrefixes = Settings.PhoneCountryCodes
+	// this.selectedPhonePrefix = ko.observable(null)
 	this.maskObject = null
 
 	this.init()
@@ -188,14 +188,15 @@ CSignupView.prototype.init = function ()
 		this.codeError(false)
 	}, this)
 
-	this.selectedPhonePrefix.subscribe(function (v) {
-		const mask = '0'.repeat(4 - v?.code?.length + 1) + '-000-00-00'
-		this.maskObject.updateOptions({mask: mask})
-	}, this)
+	// this.selectedPhonePrefix.subscribe(function (v) {
+	// 	const mask = '0'.repeat(4 - v?.code?.length + 1) + '-000-00-00'
+	// 	this.maskObject.updateOptions({mask: mask})
+	// }, this)
 
 	this.phoneDom.subscribe(function (element) {
 		const maskOptions = {
-			mask: '0'.repeat(4 - this.selectedPhonePrefix()?.code?.length + 1) + '-000-00-00',
+			// mask: '0'.repeat(4 - this.selectedPhonePrefix()?.code?.length + 1) + '-000-00-00',
+			mask: '+0000-000-00-00',
 			lazy: false,
 		}
 		this.maskObject = IMask.default(element[0], maskOptions)
@@ -253,14 +254,15 @@ CSignupView.prototype.onShow = function ()
 		this.domains(Settings.PersonalDomains.map(domain => '@' + domain))
 		this.selectedDomain(this.domains()[0])
 	}
-	this.selectedPhonePrefix(this.phonePrefixes[0])
+	// this.selectedPhonePrefix(this.phonePrefixes[0])
 }
 
 CSignupView.prototype.validatePhone = function ()
 {
 	let valid = true
 
-	if (this.phone().length === 0 || !this.selectedPhonePrefix()) {
+	// if (this.phone().length === 0 || !this.selectedPhonePrefix()) {
+	if (this.phone().length === 0) {
 		this.phoneFocus(true)
 		valid = false
 	}
@@ -325,10 +327,10 @@ CSignupView.prototype.validateDomain = function ()
 	return valid
 }
 
-CSignupView.prototype.setPhonePrefix = function (prefix)
-{
-	this.selectedPhonePrefix(prefix)
-}
+// CSignupView.prototype.setPhonePrefix = function (prefix)
+// {
+// 	this.selectedPhonePrefix(prefix)
+// }
 
 /**
  *  The functon creates countdown timer
@@ -465,7 +467,8 @@ CSignupView.prototype.registerAccount = function ()
 			'AccountType': Types.pInt(this.accountType()),
 			'Email': this.getEmail(),
 			'Password': this.password().trim(),
-			'Phone': this.selectedPhonePrefix().code + this.phone(),
+			// 'Phone': this.selectedPhonePrefix().code + this.phone(),
+			'Phone': this.phone(),
 			'Language': $.cookie('aurora-selected-lang') || '',
 		}
 
