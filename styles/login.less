@@ -12,12 +12,20 @@
 		padding: 60px;
 		box-shadow: 0px 4px 30px 0px rgba(0, 0, 0, 0.15);
 
+		@media (orientation: portrait) {
+			flex-direction: column;
+		}
+
 		.left-col {
 			margin-right: 60px;
 			display: flex;
     		flex-direction: column;
 			width: 360px;
+			@media (orientation: portrait) {
+				margin-bottom: 20px;
+			}
 		}
+
 		.right-col {
 			padding-top: 10px;
 			width: 420px;
@@ -31,6 +39,9 @@
 			font-size: 36px;
 			line-height: 1.35;
 			font-weight: 600;
+			@media (orientation: portrait) {
+				margin-bottom: 10px;
+			}
 		}
 
 		.sub-title {
