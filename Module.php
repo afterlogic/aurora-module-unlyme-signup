@@ -331,7 +331,6 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     /**
      * Summary of ResendCode
      * @param mixed $UUID
-     * @param mixed $Code
      * @return int
      */
     public function ResendCode($UUID)
@@ -348,6 +347,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     }
     /***** public functions might be called with web API *****/
 
+    /**
+     * @param Models\RegistrationUser $RegUser
+     */
     protected function sendCode($RegUser)
     {
         if (!empty($RegUser->Phone)) {

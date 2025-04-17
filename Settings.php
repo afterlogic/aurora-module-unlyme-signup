@@ -20,6 +20,9 @@ use Aurora\System\SettingsProperty;
  * @property string $BottomInfoHtmlText
  * @property int $LoginSignMeType
  * @property bool $AllowChangeLanguage
+ * @property int $CodeResendTime
+ * @property array $PhoneCountryCodes
+ * @property array $Twilio
  */
 
 class Settings extends \Aurora\System\Module\Settings
