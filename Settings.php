@@ -111,9 +111,9 @@ class Settings extends \Aurora\System\Module\Settings
                         "icon" => "de",
                     ],
                     [
-                    	"name" => "Switzerland",
-                    	"code" => "+41",
-                    	"icon" => "ch",
+                        "name" => "Switzerland",
+                        "code" => "+41",
+                        "icon" => "ch",
                     ],
                     [
                         "name" => "United Kingdom",

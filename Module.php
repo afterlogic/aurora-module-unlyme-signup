@@ -146,7 +146,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $regUser->AccountType = $AccountType;
 
                     $regUser->save();
-                } else if ( $Email && ($regUser->Email === $Email || self::Decorator()->VerifyEmail($Email)) ) { // check email only if it was changed
+                } elseif ($Email && ($regUser->Email === $Email || self::Decorator()->VerifyEmail($Email))) { // check email only if it was changed
                     $regUser->Email = $Email;
                     $regUser->AccountType = $AccountType;
                     $regUser->Phone = $Phone;
@@ -158,7 +158,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 }
             } elseif ($AccountType === Enums\AccountType::Personal) {
                 // check email only if it was changed
-                if ( $Email && ($regUser->Email === $Email || self::Decorator()->VerifyEmail($Email)) ) {
+                if ($Email && ($regUser->Email === $Email || self::Decorator()->VerifyEmail($Email))) {
                     $regUser->AccountType = $AccountType;
                     $regUser->Phone = $Phone;
                     $regUser->Email = $Email;
@@ -182,15 +182,15 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 $mResult = $regUser->UUID;
             }
         }
-        
+
         return $mResult;
     }
 
     /**
      * Summary of VerifyDomain
-     * 
+     *
      * @param mixed $Domain
-     * 
+     *
      * @return bool
      */
     public function VerifyDomain($Domain)
@@ -270,7 +270,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 $tenant = $this->getDefaultTenant();
                 if ($tenant) {
                     $tenantId = $tenant->Id;
-                    
+
                     $domainName = explode('@', $regUser->Email)[1];
                     $domain = MailDomains::getInstance()->getDomainsManager()->getDomainByName($domainName, $tenant->Id);
                     if ($domain) {
@@ -290,10 +290,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $oUser->save();
                 }
                 $account = Mail::Decorator()->CreateAccount(
-                    $userId, 
-                    '', 
-                    $regUser->Email, 
-                    !empty($regUser->Login) ? $regUser->Login : $regUser->Email, 
+                    $userId,
+                    '',
+                    $regUser->Email,
+                    !empty($regUser->Login) ? $regUser->Login : $regUser->Email,
                     $regUser->Password
                 );
                 if ($account) {
@@ -301,7 +301,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $regUser->delete();
                 } else {
                     Core::Decorator()->DeleteUser($userId);
-                    if ($regUser->AccountType === Enums\AccountType::Business ) {
+                    if ($regUser->AccountType === Enums\AccountType::Business) {
                         if ($domainId > 0) {
                             MailDomains::Decorator()->DeleteDomains($tenantId, [$domainId]);
                         }
@@ -313,7 +313,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     //TODO: Can`t create account
                 }
             } else {
-                if ($regUser->AccountType === Enums\AccountType::Business ) {
+                if ($regUser->AccountType === Enums\AccountType::Business) {
                     if ($domainId > 0) {
                         MailDomains::Decorator()->DeleteDomains($tenantId, [$domainId]);
                     }
@@ -348,7 +348,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     }
     /***** public functions might be called with web API *****/
 
-    protected function sendCode($RegUser) 
+    protected function sendCode($RegUser)
     {
         if (!empty($RegUser->Phone)) {
             $twilio = $this->getTwilioClient();
@@ -371,7 +371,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         return true;
     }
 
-    protected function validateCode($RegUser, $Code) 
+    protected function validateCode($RegUser, $Code)
     {
         $mResult = false;
 
@@ -384,9 +384,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     "to" => $RegUser->Phone,
                     "code" => $Code,
                 ]);
-    
+
             $mResult = $verification_check && $verification_check->status === 'approved';
-        } else if ($Code === '123456') {
+        } elseif ($Code === '123456') {
             $mResult = true;
         }
 
@@ -398,8 +398,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $twilioConfig = $this->getConfig('Twilio');
 
         if (!$this->twilioClient && !empty($twilioConfig)) {
-            if (is_array($twilioConfig) && !empty($twilioConfig['AccountSID']) && !empty($twilioConfig['AuthToken'] && !empty($twilioConfig['ServiceId'])))
-            $this->twilioClient = new \Twilio\Rest\Client($twilioConfig['AccountSID'], $twilioConfig['AuthToken']);
+            if (is_array($twilioConfig) && !empty($twilioConfig['AccountSID']) && !empty($twilioConfig['AuthToken'] && !empty($twilioConfig['ServiceId']))) {
+                $this->twilioClient = new \Twilio\Rest\Client($twilioConfig['AccountSID'], $twilioConfig['AuthToken']);
+            }
         }
 
         return $this->twilioClient;

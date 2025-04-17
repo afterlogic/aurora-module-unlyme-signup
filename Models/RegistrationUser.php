@@ -14,7 +14,7 @@ use Aurora\System\Classes\Model;
  *
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2023, Afterlogic Corp.
+ *
  * @property int    $Id             Object primary key
  * @property string $UUID           Unique identifier of the object
  * @property string $Domain         Domain name
