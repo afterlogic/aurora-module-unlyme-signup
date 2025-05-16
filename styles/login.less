@@ -1,34 +1,123 @@
-& {
+&.screen {
 	display: flex;
 	justify-content: center;
 	// align-items: center;
 	font-family: 'Poppins', sans-serif;
-	
+
+	@media (max-width: 430px) {
+		min-height: 100%;
+		margin: 0 30px;
+		padding-bottom: 26px;
+		overflow: visible;
+		position: relative;
+		height: fit-content !important;
+
+		&:not(.signup) {
+			.title, .post-text {
+				display: none;
+			}
+		}
+
+		.login-panel {
+			min-height: Calc(100vh - 52px);
+			position: relative;
+			display: grid;
+			grid-template-columns: auto 60px;
+			grid-template-areas:
+			"header header"
+			"content content"
+			"footer languages";
+			align-content: space-between;
+
+			.header {
+				margin-bottom: 20px;
+				grid-area: header;
+			}
+
+			.card {
+				padding: 24px;
+				grid-area: content;
+				grid-template-areas:
+				"title"
+				"right-col"
+				"post-text";
+
+				.right-col {
+					width: 100%;
+					margin: 0;
+				}
+
+				.title { 
+					font-size: 20px;
+				}
+
+				.button.back {
+					padding: 0 !important;
+				}
+			}
+
+			.bottom_description {
+				display: grid;
+				position: relative;
+				padding-left: 24px;
+				grid-template-columns: repeat(2, 1fr);
+				grid-template-rows: auto min-content;
+				gap: 8px;
+
+				span, a {
+					font-size: 12px;
+					line-height: 14px;
+				}
+			}
+
+			.languages {
+				position: static;
+				grid-area: languages;
+				padding: 0;
+				margin-top: 24px;
+
+				.dropdown {
+					top: -210px;
+
+					.dropdown_arrow {
+						position: absolute;
+						bottom: 0;
+						right: 0;
+						border-top: 6px solid #cbc8c0;
+						border-bottom: none;
+						span {
+							border-top: 6px solid #ffffff;
+							border-bottom: none;
+							top: -6px;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	.card {
-		display: flex;
-		flex-direction: row;
+		display: grid;
+		grid-template-columns: 360px 420px;
+		grid-template-areas:
+		"title right-col"
+		"description right-col"
+		"post-text right-col";
+		max-width: 840px;
+		column-gap: 60px;
 		background: #fff;
 		border-radius: 8px;
 		padding: 60px;
 		box-shadow: 0px 4px 30px 0px rgba(0, 0, 0, 0.15);
 
 		@media (orientation: portrait) {
-			flex-direction: column;
-		}
-
-		.left-col {
-			margin-right: 60px;
-			display: flex;
-    		flex-direction: column;
-			width: 360px;
-			@media (orientation: portrait) {
-				margin-bottom: 20px;
-			}
+			grid-template-columns: 1fr;
+			row-gap: 20px;
 		}
 
 		.right-col {
 			padding-top: 10px;
-			width: 420px;
+			grid-area: right-col;
 
 			.description {
 				margin-bottom: 24px;
@@ -55,6 +144,11 @@
 			
 			line-height: 1.4;
 			flex-grow: 1;
+		}
+
+		.post-text {
+			align-content: end;
+			grid-area: post-text;
 		}
 
 		.custom_switcher {

@@ -1,4 +1,4 @@
-<div class="screen UnlymeLoginLayout" style="display: none;">
+<div class="screen UnlymeLoginLayout signup" style="display: none;"> <!-- class "signup depends on url" -->
 	<div class="login-panel">
 		<div class="header" data-bind="css: {'custom_logo': sCustomLogoUrl}">
 			<!-- ko if: sCustomLogoUrl === '' --><span class="icon"></span><!-- /ko -->
@@ -6,14 +6,11 @@
 			<!-- <span class="text" data-bind="i18n: {'key': 'COREWEBCLIENT/HEADING_LOGIN'}"></span> -->
 		</div>
 		<div class="card">
-			
-			<div class="left-col">
-				<!--{%INCLUDE-START/Login-Before-Description/INCLUDE-END%}-->
-				<div class="title" data-bind="i18n: {'key': '%MODULENAME%/TITLE_SIGNUP'}"></div>
-				<div class="description" data-bind="i18n: {key: '%MODULENAME%/DESCRIPTION_SIGNUP', type: 'html'}"></div>
-				<!--{%INCLUDE-START/Login-After-Description/INCLUDE-END%}-->
-				<div class="post-text" data-bind="i18n: {key: '%MODULENAME%/POST_TEXT_SIGNUP', type: 'html'}"></div>
-			</div>
+			<!--{%INCLUDE-START/Login-Before-Description/INCLUDE-END%}-->
+			<div class="title" data-bind="i18n: {'key': '%MODULENAME%/TITLE_SIGNUP'}"></div>
+			<!-- <div class="description" data-bind="i18n: {key: '%MODULENAME%/DESCRIPTION_SIGNUP', type: 'html'}"></div> -->
+			<!--{%INCLUDE-START/Login-After-Description/INCLUDE-END%}-->
+			<div class="post-text" data-bind="i18n: {key: '%MODULENAME%/POST_TEXT_SIGNUP', type: 'html'}"></div>
 			<div class="right-col">
 				<form class="form fields" action="#" autocomplete="on" onsubmit="return false;">
 					<div class="fieldset">
