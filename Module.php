@@ -399,7 +399,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         $twilioConfig = $this->getConfig('Twilio');
 
-        if (!$this->twilioClient && !empty($twilioConfig)) {
+        if (!$this->twilioClient && !empty($twilioConfig['AccountSID']) && !empty($twilioConfig['AuthToken']) && !empty($twilioConfig['ServiceId'])) {
             if (is_array($twilioConfig) && !empty($twilioConfig['AccountSID']) && !empty($twilioConfig['AuthToken'] && !empty($twilioConfig['ServiceId']))) {
                 $this->twilioClient = new \Twilio\Rest\Client($twilioConfig['AccountSID'], $twilioConfig['AuthToken']);
             }
