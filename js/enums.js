@@ -24,6 +24,7 @@ Enums.SignupScreen = {
 	'BusinessDomain': 1,
 	'BusinessAccount': 2,
 	'Confirmation': 3,
+	'Completed': 4,
 }
 
 if (typeof window.Enums === 'undefined')

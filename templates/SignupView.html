@@ -10,7 +10,7 @@
 			<div class="title" data-bind="i18n: {'key': '%MODULENAME%/TITLE_SIGNUP'}"></div>
 			<!-- <div class="description" data-bind="i18n: {key: '%MODULENAME%/DESCRIPTION_SIGNUP', type: 'html'}"></div> -->
 			<!--{%INCLUDE-START/Login-After-Description/INCLUDE-END%}-->
-			<div class="post-text" data-bind="i18n: {key: '%MODULENAME%/POST_TEXT_SIGNUP', type: 'html'}"></div>
+			<div class="post-text" data-bind="if: !mobileApp(), i18n: {key: '%MODULENAME%/POST_TEXT_SIGNUP', type: 'html'}"></div>
 			<div class="right-col">
 				<form class="form fields" action="#" autocomplete="on" onsubmit="return false;">
 					<div class="fieldset">
@@ -23,6 +23,7 @@
 						<div data-bind="template: { name: '%ModuleName%_SignupDomain', if: screenToShow() == Enums.SignupScreen.BusinessDomain, data: $data }"></div>
 						<div data-bind="template: { name: '%ModuleName%_SignupBusinessAccount', if: screenToShow() == Enums.SignupScreen.BusinessAccount, data: $data }"></div>
 						<div data-bind="template: { name: '%ModuleName%_SignupCodeVerification', if: screenToShow() == Enums.SignupScreen.Confirmation, data: $data }"></div>
+						<div data-bind="template: { name: '%ModuleName%_SignupCompleted', if: screenToShow() == Enums.SignupScreen.Completed, data: $data }"></div>
 					</div>
 				</form>
 				<div class="clear"></div>

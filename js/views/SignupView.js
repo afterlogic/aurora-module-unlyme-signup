@@ -26,6 +26,8 @@ var
 function CSignupView()
 {
 	CAbstractScreenView.call(this, '%ModuleName%')
+
+	this.mobileApp = ko.observable(false)
 	
 	this.sCustomLogoUrl = Settings.CustomLogoUrl
 	this.sBottomInfoHtmlText = Settings.BottomInfoHtmlText
@@ -81,7 +83,7 @@ function CSignupView()
 			}
 
 			if (this.codeAccepted()) {
-				screenToShow = Enums.SignupScreen.Confirmation
+				screenToShow = Enums.SignupScreen.Completed
 			}
 		} else if (this.accountType() == Enums.UnlymeAccountType.Business) {
 			screenToShow = Enums.SignupScreen.BusinessDomain
@@ -95,7 +97,7 @@ function CSignupView()
 			}
 
 			if (this.codeAccepted()) {
-				screenToShow = Enums.SignupScreen.Confirmation
+				screenToShow = Enums.SignupScreen.Completed
 			}
 		}
 		return screenToShow
@@ -115,7 +117,6 @@ function CSignupView()
 			case Enums.SignupScreen.Confirmation:
 				this.codeFocus(true)
 		}
-		console.log(v)
 	}, this)
 
 	this.registerAccountCommand = Utils.createCommand(this, this.registerAccount, this.notloading)
@@ -242,6 +243,11 @@ CSignupView.prototype.init = function ()
 /**
  * Focuses login input after view showing.
  */
+CSignupView.prototype.onRoute = function (aParams)
+{
+	this.mobileApp(aParams && aParams.indexOf('mobile-app') !== -1)
+	console.log('CSignupView.onRoute', aParams, this.mobileApp())
+}
 CSignupView.prototype.onShow = function ()
 {
 	_.delay(_.bind(function(){
@@ -509,7 +515,11 @@ CSignupView.prototype.confirmRegistration = function ()
 		this.loading(false)
 
 		if (oResponse?.Result) {
-			window.location.href = '#' + Settings.HashSigninForm
+			if (!this.mobileApp()) {
+				window.location.href = '#' + Settings.HashSigninForm
+			} else {
+				this.codeAccepted(true)
+			}
 		} else {
 			this.codeError(true)
 		}
