@@ -23,6 +23,7 @@ use Aurora\System\SettingsProperty;
  * @property int $CodeResendTime
  * @property array $PhoneCountryCodes
  * @property array $Twilio
+ * @property int $RemoveOutdatedRegistrationUsersPeriodInHours
  */
 
 class Settings extends \Aurora\System\Module\Settings
@@ -142,6 +143,12 @@ class Settings extends \Aurora\System\Module\Settings
                 "array",
                 null,
                 "Twilio credentials",
+            ),
+            "RemoveOutdatedRegistrationUsersPeriodInHours" => new SettingsProperty(
+                1,
+                "int",
+                null,
+                "",
             ),
         ];
     }
