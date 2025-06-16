@@ -10,9 +10,9 @@ namespace Aurora\Modules\UnlymeSignup;
 
 use Aurora\Modules\UnlymeSignup\Models\RegistrationUser;
 
-// if (PHP_SAPI !== 'cli') {
-//     exit("Use the console for running this script");
-// }
+if (PHP_SAPI !== 'cli') {
+    exit("Use the console for running this script");
+}
 
 require_once \dirname(__file__) . "/../../system/autoload.php";
 \Aurora\System\Api::Init(true);
