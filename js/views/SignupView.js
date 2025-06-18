@@ -478,6 +478,8 @@ CSignupView.prototype.registerAccount = function ()
 			'Language': $.cookie('aurora-selected-lang') || '',
 		}
 
+		App.broadcastEvent('AnonymousUserForm::PopulateFormSubmitParameters', { Module: '%ModuleName%', Parameters: oParameters })
+		
 		this.loading(true)
 
 		Ajax.send('%ModuleName%', 'Register', oParameters, function (oResponse) {

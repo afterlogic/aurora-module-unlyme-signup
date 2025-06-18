@@ -25,6 +25,9 @@
 						<div data-bind="template: { name: '%ModuleName%_SignupCodeVerification', if: screenToShow() == Enums.SignupScreen.Confirmation, data: $data }"></div>
 						<div data-bind="template: { name: '%ModuleName%_SignupCompleted', if: screenToShow() == Enums.SignupScreen.Completed, data: $data }"></div>
 					</div>
+					<!-- ko foreach: beforeButtonsControllers -->
+						<!-- ko template: { name: $data.ViewTemplate, data: $data} --><!-- /ko -->
+					<!-- /ko -->
 				</form>
 				<div class="clear"></div>
 			</div>
