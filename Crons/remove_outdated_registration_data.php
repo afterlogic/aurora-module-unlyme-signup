@@ -7,16 +7,15 @@
 
 namespace Aurora\Modules\UnlymeSignup;
 
-
 use Aurora\Modules\UnlymeSignup\Models\RegistrationUser;
 
 if (PHP_SAPI !== 'cli') {
     exit("Use the console for running this script");
 }
 
-require_once \dirname(__file__) . "/../../system/autoload.php";
+require_once \dirname(__file__) . "/../../../system/autoload.php";
 \Aurora\System\Api::Init(true);
 
-$periodInHours = Module::getInstance()->getConfig('RemoveOutdatedRegistrationUsersPeriodInHours', 1);
+$periodInHours = Module::getInstance()->getConfig('RegistrationDataLifetimeHours', 1);
 $time = (new \DateTime())->sub(new \DateInterval('PT' . $periodInHours . 'H'));
 RegistrationUser::where('UpdatedAt', '<', $time)->delete();
