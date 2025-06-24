@@ -78,11 +78,15 @@ function CSignupView()
 		if (this.accountType() == Enums.UnlymeAccountType.Personal) {
 			screenToShow = Enums.SignupScreen.PersonalAccount
 			
-			if (this.personalAccountAccepted()) {
-				screenToShow = Enums.SignupScreen.Confirmation
-			}
+			// if (this.personalAccountAccepted()) {
+			// 	screenToShow = Enums.SignupScreen.Confirmation
+			// }
 
-			if (this.codeAccepted()) {
+			// if (this.codeAccepted()) {
+			// 	screenToShow = Enums.SignupScreen.Completed
+			// }
+
+			if (this.personalAccountAccepted()) {
 				screenToShow = Enums.SignupScreen.Completed
 			}
 		} else if (this.accountType() == Enums.UnlymeAccountType.Business) {
@@ -92,11 +96,15 @@ function CSignupView()
 				screenToShow = Enums.SignupScreen.BusinessAccount
 			}
 
-			if (this.businessAccountAccepted()) {
-				screenToShow = Enums.SignupScreen.Confirmation
-			}
+			// if (this.businessAccountAccepted()) {
+			// 	screenToShow = Enums.SignupScreen.Confirmation
+			// }
 
-			if (this.codeAccepted()) {
+			// if (this.codeAccepted()) {
+			// 	screenToShow = Enums.SignupScreen.Completed
+			// }
+
+			if (this.businessAccountAccepted()) {
 				screenToShow = Enums.SignupScreen.Completed
 			}
 		}
@@ -163,12 +171,7 @@ CSignupView.prototype.init = function ()
 {
 	// reset fields that are used on both forms
 	this.accountType.subscribe(function () {
-		this.username('');
-		this.password('');
-		this.passwordRepeat('');
-		this.passwordRepeat('');
-		this.domain('');
-		this.registrationUUID('');
+		this.resetForm()
 	}, this)
 
 	// reset errors on change input values
@@ -246,7 +249,6 @@ CSignupView.prototype.init = function ()
 CSignupView.prototype.onRoute = function (aParams)
 {
 	this.mobileApp(aParams && aParams.indexOf('mobile-app') !== -1)
-	console.log('CSignupView.onRoute', aParams, this.mobileApp())
 }
 CSignupView.prototype.onShow = function ()
 {
@@ -263,6 +265,17 @@ CSignupView.prototype.onShow = function ()
 	// this.selectedPhonePrefix(this.phonePrefixes[0])
 }
 
+CSignupView.prototype.resetForm = function ()
+{
+	this.username('')
+	this.password('')
+	this.phone('')
+	this.passwordRepeat('')
+	this.passwordRepeat('')
+	this.domain('')
+	this.registrationUUID('')
+	this.code('')
+}
 CSignupView.prototype.validatePhone = function ()
 {
 	let valid = true
@@ -449,9 +462,9 @@ CSignupView.prototype.registerAccount = function ()
 			return
 		}
 		
-		if (!this.validatePhone()) {
-			return
-		}
+		// if (!this.validatePhone()) {
+		// 	return
+		// }
 
 		if (!this.validatePassword()) {
 			return
@@ -474,7 +487,7 @@ CSignupView.prototype.registerAccount = function ()
 			'Email': this.getEmail(),
 			'Password': this.password().trim(),
 			// 'Phone': this.selectedPhonePrefix().code + this.phone(),
-			'Phone': this.phone(),
+			// 'Phone': this.phone(),
 			'Language': $.cookie('aurora-selected-lang') || '',
 		}
 
@@ -487,12 +500,17 @@ CSignupView.prototype.registerAccount = function ()
 
 			if (oResponse?.Result) {
 				this.registrationUUID(oResponse?.Result)
-				this.setTimer()
+				// this.setTimer()
 
-				if (oParameters.AccountType == Enums.UnlymeAccountType.Personal) {
-					this.personalAccountAccepted(true)
-				} else if (oParameters.AccountType == Enums.UnlymeAccountType.Business) {
-					this.businessAccountAccepted(true)
+				if (!this.mobileApp()) {
+					this.resetForm()
+					window.location.href = '#' + Settings.HashSigninForm
+				} else {
+					if (oParameters.AccountType == Enums.UnlymeAccountType.Personal) {
+						this.personalAccountAccepted(true)
+					} else if (oParameters.AccountType == Enums.UnlymeAccountType.Business) {
+						this.businessAccountAccepted(true)
+					}
 				}
 			}
 		}, this)

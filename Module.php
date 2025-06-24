@@ -135,51 +135,52 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     public function Register($Domain = '', $AccountType = Enums\AccountType::Personal, $Phone = '', $Email = '', $Login = '', $Password = '', $Language = '', $UUID = '')
     {
         $mResult = false;
-        $regUser = null;
-        $sendCode = false;
+        $oRegistrationUser = null;
+        $bSaveResult = false;
 
-        $regUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
-        if ($regUser) {
+        $oRegistrationUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
+        if ($oRegistrationUser) {
             if($AccountType === Enums\AccountType::Business) {
                 if ($Domain && self::Decorator()->VerifyDomain($Domain)) {
-                    $regUser->Domain = $Domain;
-                    $regUser->AccountType = $AccountType;
+                    $oRegistrationUser->Domain = $Domain;
+                    $oRegistrationUser->AccountType = $AccountType;
 
-                    $regUser->save();
-                } elseif ($Email && ($regUser->Email === $Email || self::Decorator()->VerifyEmail($Email))) { // check email only if it was changed
-                    $regUser->Email = $Email;
-                    $regUser->AccountType = $AccountType;
-                    $regUser->Phone = $Phone;
-                    $regUser->Login = $Login;
-                    $regUser->Password = $Password;
-                    $regUser->Language = $Language;
+                    $oRegistrationUser->save();
+                } elseif ($Email && ($oRegistrationUser->Email === $Email || self::Decorator()->VerifyEmail($Email))) { // check email only if it was changed
+                    $oRegistrationUser->Email = $Email;
+                    $oRegistrationUser->AccountType = $AccountType;
+                    $oRegistrationUser->Phone = $Phone;
+                    $oRegistrationUser->Login = $Login;
+                    $oRegistrationUser->Password = $Password;
+                    $oRegistrationUser->Language = $Language;
 
-                    $sendCode = $regUser->save();
+                    $bSaveResult = $oRegistrationUser->save();
                 }
             } elseif ($AccountType === Enums\AccountType::Personal) {
                 // check email only if it was changed
-                if ($Email && ($regUser->Email === $Email || self::Decorator()->VerifyEmail($Email))) {
-                    $regUser->AccountType = $AccountType;
-                    $regUser->Phone = $Phone;
-                    $regUser->Email = $Email;
-                    $regUser->Password = $Password;
-                    $regUser->Language = $Language;
+                if ($Email && ($oRegistrationUser->Email === $Email || self::Decorator()->VerifyEmail($Email))) {
+                    $oRegistrationUser->AccountType = $AccountType;
+                    $oRegistrationUser->Phone = $Phone;
+                    $oRegistrationUser->Email = $Email;
+                    $oRegistrationUser->Password = $Password;
+                    $oRegistrationUser->Language = $Language;
 
-                    $sendCode = $regUser->save();
+                    $bSaveResult = $oRegistrationUser->save();
                 }
             }
 
-            if (empty($regUser->UUID)) {
-                $regUser->UUID = $regUser->generateUUID();
-                $regUser->save();
-                $mResult = $regUser->UUID;
+            if (empty($oRegistrationUser->UUID)) {
+                $oRegistrationUser->UUID = $oRegistrationUser->generateUUID();
+                $oRegistrationUser->save();
+                $mResult = $oRegistrationUser->UUID;
             } else {
-                $mResult = $regUser->UUID;
+                $mResult = $oRegistrationUser->UUID;
             }
 
-            if ($sendCode) {
-                $this->sendCode($regUser);
-                $mResult = $regUser->UUID;
+            if ($bSaveResult) {
+                $this->sendCode($oRegistrationUser);
+                $mResult = $oRegistrationUser->UUID;
+                self::Decorator()->ConfirmRegistration($mResult);
             }
         }
 
@@ -232,17 +233,19 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     /**
      * Summary of ConfirmRegistration
      * @param mixed $UUID
-     * @param mixed $Code
+    //  * @param mixed $Code
      * @return bool
      */
-    public function ConfirmRegistration($UUID, $Code)
+    // public function ConfirmRegistration($UUID, $Code)
+    public function ConfirmRegistration($UUID)
     {
         $mResult = false;
 
         $regUser = Models\RegistrationUser::where('UUID', $UUID)->first();
         $tenantId = 0;
         $domainId = 0;
-        if ($regUser && $this->validateCode($regUser, $Code)) { //TODO: Validate code from sms
+        // if ($regUser && $this->validateCode($regUser, $Code)) { //TODO: Validate code from sms
+        if ($regUser) {
             $prevState = Api::skipCheckUserRole(true);
             $oServer = \Aurora\Modules\Mail\Models\Server::where([['OwnerType', '=', \Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin]])->first();
             $serverId = $oServer ? $oServer->Id : 0;

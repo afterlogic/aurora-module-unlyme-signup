@@ -159,7 +159,7 @@ CSigninView.prototype.signIn = function ()
 	
 			Ajax.send('%ModuleName%', 'Login', oParameters, this.onSystemLoginResponse, this)
 		} else {
-			console.log('Error')
+			console.log('Login and password are empty')
 		}
 	}
 }
