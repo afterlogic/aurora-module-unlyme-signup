@@ -23,6 +23,11 @@ module.exports = {
 	PersonalDomains: [],
 	PhoneCountryCodes: [],
 	
+	MailAppIosLink: '',
+	MailAppAndroidLink: '',
+	FilesAppIosLink: '',
+	FilesAppAndroidLink: '',
+	
 	/**
 	 * Initializes settings from AppData object sections.
 	 * 
@@ -49,6 +54,11 @@ module.exports = {
 			this.LoginSignMeType = Types.pEnum(oAppDataSection.LoginSignMeType, Enums.LoginSignMeType, this.LoginSignMeType)
 			this.PersonalDomains = Types.pArray(oAppDataSection.PersonalDomains, this.PersonalDomains)
 			this.PhoneCountryCodes = Types.pArray(oAppDataSection.PhoneCountryCodes, this.PhoneCountryCodes)
+
+			this.MailAppIosLink = Types.pString(oAppDataSection.MailAppIosLink, this.MailAppIosLink)
+			this.MailAppAndroidLink = Types.pString(oAppDataSection.MailAppAndroidLink, this.MailAppAndroidLink)
+			this.FilesAppIosLink = Types.pString(oAppDataSection.FilesAppIosLink, this.FilesAppIosLink)
+			this.FilesAppAndroidLink = Types.pString(oAppDataSection.FilesAppAndroidLink, this.FilesAppAndroidLink)
 		}
 		
 		if (!_.isEmpty(oAppDataBrandingWebclientSection))

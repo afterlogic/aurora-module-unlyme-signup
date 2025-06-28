@@ -33,6 +33,11 @@ function CMobileAppInfoView()
 	
 	this.bRtl = UserSettings.IsRTL
 	this.aLanguages = UserSettings.LanguageList
+	this.sMailAppIosLink = Settings.MailAppIosLink
+	this.sMailAppAndroidLink = Settings.MailAppAndroidLink
+	this.sFilesAppIosLink = Settings.FilesAppIosLink
+	this.sFilesAppAndroidLink = Settings.FilesAppAndroidLink
+
 	this.currentLanguage = ko.observable(UserSettings.Language)
 	this.bAllowChangeLanguage = Settings.AllowChangeLanguage && !App.isMobile()
 

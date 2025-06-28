@@ -82,6 +82,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             'AllowChangeLanguage' => $this->oModuleSettings->AllowChangeLanguage,
             'PersonalDomains' => self::Decorator()->GetPersonalDomains(),
             'PhoneCountryCodes' => $this->oModuleSettings->PhoneCountryCodes,
+
+            'MailAppIosLink' => $this->oModuleSettings->MailAppIosLink,
+            'MailAppAndroidLink' => $this->oModuleSettings->MailAppAndroidLink,
+            'FilesAppIosLink' => $this->oModuleSettings->FilesAppIosLink,
+            'FilesAppAndroidLink' => $this->oModuleSettings->FilesAppAndroidLink,
         );
     }
 

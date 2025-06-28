@@ -24,6 +24,10 @@ use Aurora\System\SettingsProperty;
  * @property array $PhoneCountryCodes
  * @property array $Twilio
  * @property int $RegistrationDataLifetimeHours
+ * @property string $MailAppIosLink
+ * @property string $MailAppAndroidLink
+ * @property string $FilesAppIosLink
+ * @property string $FilesAppAndroidLink
  */
 
 class Settings extends \Aurora\System\Module\Settings
@@ -149,6 +153,30 @@ class Settings extends \Aurora\System\Module\Settings
                 "int",
                 null,
                 "",
+            ),
+            "MailAppIosLink" => new SettingsProperty(
+                "",
+                "string",
+                null,
+                "URL of a link to Unlyme Mail for iOS",
+            ),
+            "MailAppAndroidLink" => new SettingsProperty(
+                "",
+                "string",
+                null,
+                "URL of a link to Unlyme Mail for Android",
+            ),
+            "FilesAppIosLink" => new SettingsProperty(
+                "",
+                "string",
+                null,
+                "URL of a link to Unlyme Drive for iOS",
+            ),
+            "FilesAppAndroidLink" => new SettingsProperty(
+                "",
+                "string",
+                null,
+                "URL of a link to Unlyme Drive for Android",
             ),
         ];
     }
