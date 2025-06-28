@@ -7,6 +7,7 @@ module.exports = function (oAppData) {
 
 	const
 		App = require('%PathToCoreWebclientModule%/js/App.js'),
+		Routing = require('%PathToCoreWebclientModule%/js/Routing.js'),
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
 		bAnonimUser = App.getUserRole() === window.Enums.UserRole.Anonymous
 	;
@@ -21,7 +22,21 @@ module.exports = function (oAppData) {
 				},
 			}
 		} else {
-			return {			
+			return {
+				start: function (ModulesManager) {
+        			const bMobile = !window.matchMedia('all and (min-width: 768px)').matches
+
+					if (bMobile && Routing.currentHash().indexOf('mobile-app') === -1) {
+						Routing.replaceHash(Settings.HashMobileInfo)
+					}
+
+					Routing.currentHash.subscribe(function (hash) {
+						const bMobile = !window.matchMedia('all and (min-width: 768px)').matches
+						if (bMobile && hash.indexOf('mobile-app') === -1) {
+							Routing.replaceHash(Settings.HashMobileInfo)
+						}
+					}, this)
+      			},
 				getScreens: function () {
 					const oScreens = {}
 
@@ -30,6 +45,9 @@ module.exports = function (oAppData) {
 					}
 					oScreens[Settings.HashSignupForm] = function () {
 						return require('modules/%ModuleName%/js/views/SignupView.js')
+					}
+					oScreens[Settings.HashMobileInfo] = function () {
+						return require('modules/%ModuleName%/js/views/MobileAppInfoView.js')
 					}
 					
 					return oScreens

@@ -1,0 +1,47 @@
+<div class="screen UnlymeLoginLayout" style="display: none;">
+	<div class="login-panel">
+		<div class="header" data-bind="css: {'custom_logo': sCustomLogoUrl}">
+			<!-- ko if: sCustomLogoUrl === '' --><span class="icon"></span><!-- /ko -->
+			<!-- ko if: sCustomLogoUrl !== '' --><img data-bind="attr: {'src': sCustomLogoUrl}"/><!-- /ko -->
+			<!-- <span class="text" data-bind="i18n: {'key': 'COREWEBCLIENT/HEADING_LOGIN'}"></span> -->
+		</div>
+
+		<div class="card unlyme-mobileapp-card">
+			<h1>
+				To access UnlymeOs from mobile please use our mobile apps
+			</h1>
+			<div class="unlyme-app-list">
+				<div class="unlyme-app-item">
+					<div class="app-item-info">
+						<img src="../modules/%ModuleName%/styles/images/unlyme-mail-app-icon.png" alt="Unlyme Mail">
+						<h3>Unlyme Mail</h3>
+					</div>
+					<div class="store-buttons">
+						<a href="#" class="store-button app-store-button">
+							<img src="../modules/%ModuleName%/styles/images/app-store-badge.svg" alt="App Store">
+						</a>
+						<a href="#" class="store-button google-play-button">
+							<img src="../modules/%ModuleName%/styles/images/google-play-badge.svg" alt="Google Play">
+						</a>
+					</div>
+				</div>
+				<div class="unlyme-app-item">
+					<div class="app-item-info">
+						<img src="../modules/%ModuleName%/styles/images/unlyme-drive-app-icon.png" alt="Unlyme Drive">
+						<h3>Unlyme Drive</h3>
+					</div>
+					<div class="store-buttons">
+						<a href="#" class="store-button app-store-button">
+							<img src="../modules/%ModuleName%/styles/images/app-store-badge.svg" alt="App Store">
+						</a>
+						<a href="#" class="store-button google-play-button">
+							<img src="../modules/%ModuleName%/styles/images/google-play-badge.svg" alt="Google Play">
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="bottom_description" data-bind="visible: sBottomInfoHtmlText !== '', html: sBottomInfoHtmlText"></div>
+	</div>	
+</div>

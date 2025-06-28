@@ -10,6 +10,7 @@ module.exports = {
 	ServerModuleName: '%ModuleName%',
 	HashSigninForm: '%ModuleName%-signin',
 	HashSignupForm: '%ModuleName%-signup',
+	HashMobileInfo: 'mobile-app-info',
 	
 	AllowChangeLanguage: false,
 	CustomLogoUrl: '',
