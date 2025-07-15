@@ -320,7 +320,8 @@ CSignupView.prototype.validatePassword = function ()
 		this.passwordFocus(true)
 		valid = false
 	} else {
-		const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/
+		// any symbols, but at least 8 characters, one digit, one uppercase and one lowercase letter
+		const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
 		valid = regex.test(this.password())
 		this.passwordError(!valid)
 	}
