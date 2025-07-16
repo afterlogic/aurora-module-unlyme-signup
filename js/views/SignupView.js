@@ -55,6 +55,7 @@ function CSignupView()
 	this.phoneFocus = ko.observable(false)
 	
 	this.domainError = ko.observable(false)
+	this.domainBadError = ko.observable(false)
 	this.passwordError = ko.observable(false)
 	this.passwordRepeatError = ko.observable(false)
 	this.usernameExistError = ko.observable(false)
@@ -180,6 +181,7 @@ CSignupView.prototype.init = function ()
 		this.usernameExistError(false)
 	}, this)
 	this.domain.subscribe(function () {
+		this.domainBadError(false)
 		this.domainError(false)
 	}, this)
 	this.password.subscribe(function () {
@@ -228,7 +230,7 @@ CSignupView.prototype.init = function ()
 	}, this)
 
 	this.domain.subscribe(function (v) {
-		if (this.validateDomain(v)) {
+		if (this.validateDomain(true)) {
 			this.businessDomainApproved(false)
 			Ajax.send('%ModuleName%', 'VerifyDomain', {'Domain': v}, function (oResponse, oRequest) {
 				this.businessDomainApproved(oResponse?.Result ? true : false)
@@ -329,17 +331,23 @@ CSignupView.prototype.validatePassword = function ()
 	return valid
 }
 
-CSignupView.prototype.validateDomain = function ()
+CSignupView.prototype.validateDomain = function (silentMode = false)
 {
 	let valid = false
 
 	if (this.domain().length === 0 || this.domain().indexOf('.') <= 0) {
 		this.domainFocus(true)
+		if (!silentMode) {
+			this.domainBadError(true)
+		}
 	} else {
 		const regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/
 		valid = regex.test(this.domain())
-
+		
 		if (!valid) {
+			if (!silentMode) {
+				this.domainBadError(true)
+			}
 			this.domainFocus(true)
 		}
 	}
