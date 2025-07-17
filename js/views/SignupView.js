@@ -35,10 +35,10 @@ function CSignupView()
 	
 	this.registrationUUID = ko.observable('')
 	this.accountType = ko.observable(Enums.UnlymeAccountType.Personal)
-	this.username = ko.observable('').extend({ rateLimit: 500 })
+	this.username = ko.observable('').extend({ rateLimit: 500, method: "notifyWhenChangesStop" })
 	this.password = ko.observable('')
 	this.passwordRepeat = ko.observable('')
-	this.domain = ko.observable('').extend({ rateLimit: 500 })
+	this.domain = ko.observable('').extend({ rateLimit: 500, method: "notifyWhenChangesStop" })
 	this.code = ko.observable('')
 	this.phone = ko.observable('')
 
