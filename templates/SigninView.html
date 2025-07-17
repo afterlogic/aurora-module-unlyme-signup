@@ -23,7 +23,7 @@
 							<div class="value">
 								<div class="field">
 									<input id="login_login" tabindex="1" class="input username" password type="text" spellcheck="false"
-											data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
+											data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'keyup', 
 											i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}, initDom: usernameDom" />
 									<span class="input domain" data-bind="visible: domains().length === 1">
 										<span data-bind="text: domains()[0]"></span>
@@ -57,7 +57,7 @@
 							<label for="login_login" class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LOGIN'}"></label>
 							<div class="value">
 								<input id="login_login" tabindex="1" class="input email" password type="text" spellcheck="false"
-										data-bind="value: login, hasfocus: loginFocus, valueUpdate: 'afterkeydown', 
+										data-bind="value: login, hasfocus: loginFocus, valueUpdate: 'keyup', 
 										i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}, initDom: loginDom" />
 							</div>
 						</div>
@@ -66,7 +66,7 @@
 							<label for="login_password" class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PASSWORD'}"></label>
 							<div class="value">
 								<input id="login_password" tabindex="3" class="input password" name="password" type="password" spellcheck="false"
-										data-bind="value: password, hasfocus: passwordFocus, valueUpdate: 'afterkeydown', 
+										data-bind="value: password, hasfocus: passwordFocus, valueUpdate: 'keyup', 
 										i18n: {'key': '%MODULENAME%/PLACEHOLDER_PASSWORD', 'type': 'placeholder'}, initDom: passwordDom" />
 							</div>
 						</div>

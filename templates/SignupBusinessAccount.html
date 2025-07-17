@@ -9,7 +9,7 @@
 		'valid': !usernameBadError() && emailApproved()}">
 		<div class="field">
 			<input tabindex="1" class="input username" type="text" spellcheck="false"
-					data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'afterkeydown', 
+					data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'keyup', 
 					i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}" />
 			<span class="input domain">
 				<span data-bind="text: domain()"></span>
