@@ -128,16 +128,19 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
     /**
      * Summary of Register
-     * @param mixed $Domain
+     *
+     * @param string $Domain
      * @param mixed $AccountType
-     * @param mixed $Phone
-     * @param mixed $Email
-     * @param mixed $Login
-     * @param mixed $Password
-     * @param mixed $Language
+     * @param string $Phone
+     * @param string $Email
+     * @param string $Login
+     * @param string $Password
+     * @param string $Language
+     * @param string $Timezone
+     * @param string $UUID
      * @return bool
      */
-    public function Register($Domain = '', $AccountType = Enums\AccountType::Personal, $Phone = '', $Email = '', $Login = '', $Password = '', $Language = '', $UUID = '')
+    public function Register($Domain = '', $AccountType = Enums\AccountType::Personal, $Phone = '', $Email = '', $Login = '', $Password = '', $Language = '', $Timezone = '', $UUID = '')
     {
         $mResult = false;
         $oRegistrationUser = null;
@@ -158,6 +161,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $oRegistrationUser->Login = $Login;
                     $oRegistrationUser->Password = $Password;
                     $oRegistrationUser->Language = $Language;
+                    $oRegistrationUser->Timezone = $Timezone;
 
                     $bSaveResult = $oRegistrationUser->save();
                 }
@@ -169,6 +173,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $oRegistrationUser->Email = $Email;
                     $oRegistrationUser->Password = $Password;
                     $oRegistrationUser->Language = $Language;
+                    $oRegistrationUser->Timezone = $Timezone;
 
                     $bSaveResult = $oRegistrationUser->save();
                 }
@@ -292,6 +297,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 $oUser = Core::Decorator()->GetUser($userId);
                 if ($oUser) {
                     $oUser->Language = $regUser->Language;
+                    $oUser->DefaultTimeZone = $regUser->Timezone;
                     if ($regUser->AccountType === Enums\AccountType::Business) {
                         $oUser->Role = UserRole::TenantAdmin;
                     }

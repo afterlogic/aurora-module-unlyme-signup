@@ -4,6 +4,7 @@ var
 	_ = require('underscore'),
 	$ = require('jquery'),
 	ko = require('knockout'),
+	moment = require('moment-timezone'),
 	IMask = require('imask'),
 	
 	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
@@ -498,6 +499,7 @@ CSignupView.prototype.registerAccount = function ()
 			// 'Phone': this.selectedPhonePrefix().code + this.phone(),
 			// 'Phone': this.phone(),
 			'Language': $.cookie('aurora-selected-lang') || '',
+			'Timezone': moment.tz.guess(),
 		}
 
 		App.broadcastEvent('AnonymousUserForm::PopulateFormSubmitParameters', { Module: '%ModuleName%', Parameters: oParameters })

@@ -23,6 +23,8 @@ use Aurora\System\Classes\Model;
  * @property string $Email          Email
  * @property string $Login          Login
  * @property string $Password       Password
+ * @property string $Language       Language
+ * @property string $Timezone       Timezone
  * @property int $LastSentCodeTime  Last send code time
  */
 class RegistrationUser extends Model
@@ -45,6 +47,8 @@ class RegistrationUser extends Model
         'Email',
         'Login',
         'Password',
+        'Language',
+        'Timezone',
         'LastSentCodeTime'
     ];
 
