@@ -345,7 +345,16 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 //TODO: Can`t create user
             }
             \Aurora\Api::skipCheckUserRole($prevState);
+
+            // Authenticated if user is created
+            if ($mResult) {
+                $mResult = Core::Decorator()->Login(
+                    $regUser->Email,
+                    $regUser->Password
+                );
+            }
         }
+
         return $mResult;
     }
 

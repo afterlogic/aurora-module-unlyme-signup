@@ -524,7 +524,7 @@ CSignupView.prototype.registerAccount = function ()
 
 				if (!this.mobileApp()) {
 					this.resetForm()
-					window.location.href = '#' + Settings.HashSigninForm
+					window.location.reload()
 				} else {
 					if (oParameters.AccountType == Enums.UnlymeAccountType.Personal) {
 						this.personalAccountAccepted(true)
