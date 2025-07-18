@@ -129,9 +129,18 @@ function CSignupView()
 		}
 	}, this)
 
-	this.registerAccountCommand = Utils.createCommand(this, this.registerAccount, this.notloading)
+	this.canRegisterAccount = ko.computed(function () {
+		return this.notloading() && !this.usernameExistError() && !this.usernameBadError()
+	}, this);
+	this.registerAccountCommand = Utils.createCommand(this, this.registerAccount, this.canRegisterAccount)
+
+	this.canRegisterDomain = ko.computed(function () {
+		return this.notloading() && !this.domainError() && !this.domainBadError()
+	}, this);
+	this.registerDomainCommand = Utils.createCommand(this, this.registerDomain, this.canRegisterDomain)
+
+	
 	this.confirmCommand = Utils.createCommand(this, this.confirmRegistration, this.notloading)
-	this.registerDomainCommand = Utils.createCommand(this, this.registerDomain, this.notloading)
 	
 	this.timerObject = ko.observable(null)
 	this.timerSeconds = ko.observable(0)
@@ -211,13 +220,13 @@ CSignupView.prototype.init = function ()
 
 	//we can't put Ajax.send directly to ko.computed because it causes infinit loop
 	this.email = ko.computed(function () {
-		return this.username() + '@' + this.selectedDomain()
+		const domain = this.accountType() == Enums.UnlymeAccountType.Personal ? this.selectedDomain() : '@' + this.domain()
+		return this.username() + domain
 	}, this)
 
-	this.email.subscribe(function () {
+	this.email.subscribe(function (sEmail) {
 		if (this.username().length >= 3) {
 			this.emailApproved(false)
-			const sEmail = this.username() + this.selectedDomain()
 			Ajax.send('%ModuleName%', 'VerifyEmail', {'Email': sEmail}, function (oResponse, oRequest) {
 				this.emailApproved(oResponse?.Result ? true : false)
 

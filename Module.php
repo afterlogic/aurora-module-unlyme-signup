@@ -145,15 +145,24 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $mResult = false;
         $oRegistrationUser = null;
         $bSaveResult = false;
+        $bNeedToFinalizeRegistration = false;
+
+        if (empty($Domain) && empty($Email)) {
+            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+        }
 
         $oRegistrationUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
+        if (empty($oRegistrationUser->UUID)) {
+            $oRegistrationUser->UUID = $oRegistrationUser->generateUUID();
+        }
+
         if ($oRegistrationUser) {
             if($AccountType === Enums\AccountType::Business) {
                 if ($Domain && self::Decorator()->VerifyDomain($Domain)) {
                     $oRegistrationUser->Domain = $Domain;
                     $oRegistrationUser->AccountType = $AccountType;
 
-                    $oRegistrationUser->save();
+                    $bSaveResult = $oRegistrationUser->save();
                 } elseif ($Email && ($oRegistrationUser->Email === $Email || self::Decorator()->VerifyEmail($Email))) { // check email only if it was changed
                     $oRegistrationUser->Email = $Email;
                     $oRegistrationUser->AccountType = $AccountType;
@@ -164,6 +173,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $oRegistrationUser->Timezone = $Timezone;
 
                     $bSaveResult = $oRegistrationUser->save();
+                    $bNeedToFinalizeRegistration = true;
                 }
             } elseif ($AccountType === Enums\AccountType::Personal) {
                 // check email only if it was changed
@@ -176,21 +186,18 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $oRegistrationUser->Timezone = $Timezone;
 
                     $bSaveResult = $oRegistrationUser->save();
+                    $bNeedToFinalizeRegistration = true;
                 }
             }
 
-            if (empty($oRegistrationUser->UUID)) {
-                $oRegistrationUser->UUID = $oRegistrationUser->generateUUID();
-                $oRegistrationUser->save();
-                $mResult = $oRegistrationUser->UUID;
-            } else {
-                $mResult = $oRegistrationUser->UUID;
-            }
-
             if ($bSaveResult) {
-                $this->sendCode($oRegistrationUser);
                 $mResult = $oRegistrationUser->UUID;
-                self::Decorator()->ConfirmRegistration($mResult);
+
+                if ($bNeedToFinalizeRegistration) {
+                    // $this->sendCode($oRegistrationUser);
+                    // temporarily override Register response to return AuthToken
+                    $mResult = self::Decorator()->ConfirmRegistration($mResult);
+                }
             }
         }
 

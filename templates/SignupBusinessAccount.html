@@ -12,7 +12,7 @@
 					data-bind="value: username, hasfocus: usernameFocus, valueUpdate: 'keyup', 
 					i18n: {'key': '%MODULENAME%/PLACEHOLDER_LOGIN', 'type': 'placeholder'}" />
 			<span class="input domain">
-				<span data-bind="text: domain()"></span>
+				<span data-bind="text: '@' + domain()"></span>
 			</span>
 		</div>
 		<div class="error_text" data-bind="visible: usernameBadError(), i18n: {'key': '%MODULENAME%/ERROR_EMAIL_ACCOUNT_FORBIDDEN'}"></div>
