@@ -237,6 +237,14 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $mResult = false;
 
         if (!empty($Email)) {
+
+            $sDomain = \MailSo\Base\Utils::GetDomainFromEmail($Email);
+            $registrationEmailDomain = Models\RegistrationUser::where('Domain', $sDomain)->where('AccountType', Enums\AccountType::Business)->first();
+            
+            if (!$registrationEmailDomain) {
+                return false;
+            }
+
             $account = Mail::Decorator()->getAccountsManager()->getAccountUsedToAuthorize($Email);
             $registrationEmail = Models\RegistrationUser::where('Email', $Email)->first();
             if (!$account && !$registrationEmail) {
