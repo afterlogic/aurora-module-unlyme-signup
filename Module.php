@@ -152,11 +152,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         }
 
         $oRegistrationUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
-        if (empty($oRegistrationUser->UUID)) {
-            $oRegistrationUser->UUID = $oRegistrationUser->generateUUID();
-        }
 
         if ($oRegistrationUser) {
+            if (empty($oRegistrationUser->UUID)) {
+                $oRegistrationUser->UUID = $oRegistrationUser->generateUUID();
+            }
             if($AccountType === Enums\AccountType::Business) {
                 if ($Domain && self::Decorator()->VerifyDomain($Domain)) {
                     $oRegistrationUser->Domain = $Domain;
