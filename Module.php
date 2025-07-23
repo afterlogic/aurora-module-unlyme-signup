@@ -240,7 +240,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
             $sDomain = \MailSo\Base\Utils::GetDomainFromEmail($Email);
             $registrationEmailDomain = Models\RegistrationUser::where('Domain', $sDomain)->where('AccountType', Enums\AccountType::Business)->first();
-            
+
             if (!$registrationEmailDomain) {
                 return false;
             }
