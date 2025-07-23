@@ -245,9 +245,7 @@ CSignupView.prototype.init = function ()
 			Ajax.send('%ModuleName%', 'VerifyDomain', {'Domain': v}, function (oResponse, oRequest) {
 				this.businessDomainApproved(oResponse?.Result ? true : false)
 
-				if (!oResponse?.Result) {
-					this.domainError(true)
-				}
+				this.domainError(!oResponse?.Result)
 			}, this)
 		} else {
 			this.businessDomainApproved(false)
@@ -445,6 +443,11 @@ CSignupView.prototype.back = function ()
 
 CSignupView.prototype.registerDomain = function ()
 {
+	if (this.registerDomainTimer) {
+		clearTimeout(this.registerDomainTimer)
+		this.registerDomainTimer = null
+	}
+
 	if (this.domain().length === 0) {
 		this.domainFocus(true)
 	} else if (this.validateDomain()) {
@@ -454,8 +457,17 @@ CSignupView.prototype.registerDomain = function ()
 			'Domain': this.domain(),
 			'Language': $.cookie('aurora-selected-lang') || '',
 		}
+		const oEventParameters = { Module: '%ModuleName%', Parameters: oParameters, Reject: false }
 
 		this.loading(true)
+
+		App.broadcastEvent('AnonymousUserForm::PopulateFormSubmitParameters', oEventParameters)
+
+		// check if reject status was passed by other listeners and restart method in a second
+		if (oEventParameters.Reject) {
+			this.registerDomainTimer = setTimeout(_.bind(this.registerDomain, this), 1000)
+			return
+		}
 
 		Ajax.send('%ModuleName%', 'Register', oParameters, function (oResponse) {
 			this.loading(false)
@@ -475,6 +487,11 @@ CSignupView.prototype.registerDomain = function ()
 
 CSignupView.prototype.registerAccount = function ()
 {
+	if (this.registerAccountTimer) {
+		clearTimeout(this.registerAccountTimer)
+		this.registerAccountTimer = null
+	}
+
 	if (this.screenToShow() == Enums.SignupScreen.PersonalAccount || this.screenToShow() == Enums.SignupScreen.BusinessAccount) {
 		
 		if (!this.validateEmail()) {
@@ -510,10 +527,18 @@ CSignupView.prototype.registerAccount = function ()
 			'Language': $.cookie('aurora-selected-lang') || '',
 			'Timezone': moment.tz.guess(),
 		}
-
-		App.broadcastEvent('AnonymousUserForm::PopulateFormSubmitParameters', { Module: '%ModuleName%', Parameters: oParameters })
+		const oEventParameters = { Module: '%ModuleName%', Parameters: oParameters, Reject: false }
+		
 		
 		this.loading(true)
+		
+		App.broadcastEvent('AnonymousUserForm::PopulateFormSubmitParameters', oEventParameters)
+		
+		// check if reject status was passed by other listeners and restart method in a second
+		if (oEventParameters.Reject) {
+			this.registerAccountTimer = setTimeout(_.bind(this.registerAccount, this), 1000)
+			return
+		}
 
 		Ajax.send('%ModuleName%', 'Register', oParameters, function (oResponse) {
 			this.loading(false)
