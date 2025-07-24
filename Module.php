@@ -163,7 +163,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $oRegistrationUser->AccountType = $AccountType;
 
                     $bSaveResult = $oRegistrationUser->save();
-                } elseif ($Email && ($oRegistrationUser->Email === $Email || self::Decorator()->VerifyEmail($Email))) { // check email only if it was changed
+                } elseif ($Email && ($oRegistrationUser->Email === $Email || self::Decorator()->VerifyEmail($Email, $AccountType))) { // check email only if it was changed
                     $oRegistrationUser->Email = $Email;
                     $oRegistrationUser->AccountType = $AccountType;
                     $oRegistrationUser->Phone = $Phone;
@@ -177,7 +177,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 }
             } elseif ($AccountType === Enums\AccountType::Personal) {
                 // check email only if it was changed
-                if ($Email && ($oRegistrationUser->Email === $Email || self::Decorator()->VerifyEmail($Email))) {
+                if ($Email && ($oRegistrationUser->Email === $Email || self::Decorator()->VerifyEmail($Email, $AccountType))) {
                     $oRegistrationUser->AccountType = $AccountType;
                     $oRegistrationUser->Phone = $Phone;
                     $oRegistrationUser->Email = $Email;
@@ -230,19 +230,49 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     /**
      * Summary of VerifyEmail
      * @param string $Email
+     * @param int $AccountType
+     * @param string $RegistrationUUID
      * @return bool
      */
-    public function VerifyEmail($Email)
+    public function VerifyEmail($Email, $AccountType, $RegistrationUUID = '')
     {
         $mResult = false;
 
         if (!empty($Email)) {
 
-            $sDomain = \MailSo\Base\Utils::GetDomainFromEmail($Email);
-            $registrationEmailDomain = Models\RegistrationUser::where('Domain', $sDomain)->where('AccountType', Enums\AccountType::Business)->first();
+            $sDomainName = \MailSo\Base\Utils::GetDomainFromEmail($Email);
 
-            if (!$registrationEmailDomain) {
+            $query = Models\RegistrationUser::where('Domain', $sDomainName)->where('AccountType', Enums\AccountType::Business);
+            if ($RegistrationUUID && $AccountType === Enums\AccountType::Business) {
+                $query->where('UUID', $RegistrationUUID);
+            }
+            $registrationBusinessDomain = $query->first();
+            
+            if ($AccountType === Enums\AccountType::Business && !$registrationBusinessDomain) {
                 return false;
+            }
+
+            if ($AccountType === Enums\AccountType::Personal) {
+
+                if ($registrationBusinessDomain) {
+                    return false;
+                } else {
+                    // check if domain exists in Default tenant
+                    // if not, then it is not allowed to register with this email
+                    $tenant = $this->getDefaultTenant();
+                    // if tenant exists, then check if domain exists in it
+                    if ($tenant) {
+                        $domain = MailDomains::getInstance()->getDomainsManager()->getDomainByName($sDomainName, $tenant->Id);
+                        // if domain exists in Default tenant, then it is allowed to register with this email
+                        // if not, then it is not allowed to register with this email
+                        if (!$domain) {
+                            return false;
+                        }
+                    } else {
+                        // no default tenant, so it is not allowed to register with this email
+                        return false;
+                    }
+                }
             }
 
             $account = Mail::Decorator()->getAccountsManager()->getAccountUsedToAuthorize($Email);

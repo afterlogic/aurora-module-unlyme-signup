@@ -227,7 +227,7 @@ CSignupView.prototype.init = function ()
 	this.email.subscribe(function (sEmail) {
 		if (this.username().length >= 3) {
 			this.emailApproved(false)
-			Ajax.send('%ModuleName%', 'VerifyEmail', {'Email': sEmail}, function (oResponse, oRequest) {
+			Ajax.send('%ModuleName%', 'VerifyEmail', {'Email': sEmail, 'AccountType': Types.pInt(this.accountType()), 'RegistrationUUID': this.registrationUUID()}, function (oResponse, oRequest) {
 				this.emailApproved(oResponse?.Result ? true : false)
 
 				if (!oResponse?.Result) {
