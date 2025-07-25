@@ -32,6 +32,7 @@ function CSignupView()
 	
 	this.sCustomLogoUrl = Settings.CustomLogoUrl
 	this.sBottomInfoHtmlText = Settings.BottomInfoHtmlText
+	this.versionText = TextUtils.i18n('%MODULENAME%/VERSION_LABEL', { VERSION: '1.0' })
 	
 	this.registrationUUID = ko.observable('')
 	this.accountType = ko.observable(Enums.UnlymeAccountType.Personal)

@@ -32,9 +32,10 @@
 				<div class="clear"></div>
 			</div>
 		</div>
-		<div class="bottom_description" data-bind="visible: sBottomInfoHtmlText !== '', html: sBottomInfoHtmlText"></div>
 		<!--{%INCLUDE-START/Login-Footer/INCLUDE-END%}-->
-		
+
+		<!-- ko template: { name: '%ModuleName%_BottomDescription', data: $data } --><!-- /ko -->
+
 		<!-- ko template: { name: '%ModuleName%_LanguageSelector', data: $data } --><!-- /ko -->
 	</div>	
 </div>

@@ -30,7 +30,7 @@ function CSigninView()
 	
 	this.sCustomLogoUrl = Settings.CustomLogoUrl
 	this.sBottomInfoHtmlText = Settings.BottomInfoHtmlText
-	
+	this.versionText = TextUtils.i18n('%MODULENAME%/VERSION_LABEL', { VERSION: '1.0' })
 
 	this.accountType = ko.observable(Enums.UnlymeAccountType.Personal)
 	this.username = ko.observable('')

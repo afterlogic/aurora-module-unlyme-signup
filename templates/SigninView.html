@@ -92,7 +92,8 @@
 				<div class="clear"></div>
 			</div>
 		</div>
-		<div class="bottom_description" data-bind="visible: sBottomInfoHtmlText !== '', html: sBottomInfoHtmlText"></div>
+
+		<!-- ko template: { name: '%ModuleName%_BottomDescription', data: $data } --><!-- /ko -->
 
 		<!-- ko template: { name: '%ModuleName%_LanguageSelector', data: $data } --><!-- /ko -->
 	</div>	

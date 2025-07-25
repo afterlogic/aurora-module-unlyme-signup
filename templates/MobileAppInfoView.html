@@ -7,9 +7,7 @@
 		</div>
 
 		<div class="card unlyme-mobileapp-card">
-			<h1>
-				To access UnlymeOs from mobile please use our mobile apps
-			</h1>
+			<h1 data-bind="i18n: {'key': '%MODULENAME%/APP_INFO_TEXT'}"></h1>
 			<div class="unlyme-app-list">
 				<div class="unlyme-app-item">
 					<div class="app-item-info">
@@ -42,6 +40,7 @@
 			</div>
 		</div>
 
-		<div class="bottom_description" data-bind="visible: sBottomInfoHtmlText !== '', html: sBottomInfoHtmlText"></div>
+		<!-- ko template: { name: '%ModuleName%_BottomDescription', data: $data } --><!-- /ko -->
+
 	</div>	
 </div>
