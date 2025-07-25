@@ -30,16 +30,18 @@ function CMobileAppInfoView()
 	
 	this.sCustomLogoUrl = Settings.CustomLogoUrl
 	this.sBottomInfoHtmlText = Settings.BottomInfoHtmlText
+	this.versionText = TextUtils.i18n('%MODULENAME%/VERSION_LABEL', { VERSION: '1.0' })
 	
 	this.bRtl = UserSettings.IsRTL
 	this.aLanguages = UserSettings.LanguageList
+	this.currentLanguage = ko.observable(UserSettings.Language)
+	this.bAllowChangeLanguage = Settings.AllowChangeLanguage && !App.isMobile()
+
 	this.sMailAppIosLink = Settings.MailAppIosLink
 	this.sMailAppAndroidLink = Settings.MailAppAndroidLink
 	this.sFilesAppIosLink = Settings.FilesAppIosLink
 	this.sFilesAppAndroidLink = Settings.FilesAppAndroidLink
 
-	this.currentLanguage = ko.observable(UserSettings.Language)
-	this.bAllowChangeLanguage = Settings.AllowChangeLanguage && !App.isMobile()
 
 	App.broadcastEvent('%ModuleName%::ConstructView::after', {'Name': this.ViewConstructorName, 'View': this})
 }
