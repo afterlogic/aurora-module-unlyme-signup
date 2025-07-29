@@ -25,14 +25,14 @@ module.exports = function (oAppData) {
 			return {
 				start: function (ModulesManager) {
         			const bMobile = !window.matchMedia('all and (min-width: 768px)').matches
-
-					if (bMobile && Routing.currentHash().indexOf('mobile-app') === -1) {
+					
+					if (bMobile && Settings.IgnoreHashesList.indexOf(Routing.currentHash()) === -1) {
 						Routing.replaceHash(Settings.HashMobileInfo)
 					}
 
 					Routing.currentHash.subscribe(function (hash) {
 						const bMobile = !window.matchMedia('all and (min-width: 768px)').matches
-						if (bMobile && hash.indexOf('mobile-app') === -1) {
+						if (bMobile && Settings.IgnoreHashesList.indexOf(hash) === -1) {
 							Routing.replaceHash(Settings.HashMobileInfo)
 						}
 					}, this)
