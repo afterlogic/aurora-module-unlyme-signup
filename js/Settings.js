@@ -11,6 +11,7 @@ module.exports = {
 	HashSigninForm: '%ModuleName%-signin',
 	HashSignupForm: '%ModuleName%-signup',
 	HashMobileInfo: 'mobile-app-info',
+	IgnoreHashesListForMobileAppInfo: [],
 	
 	AllowChangeLanguage: false,
 	CustomLogoUrl: '',
@@ -55,6 +56,7 @@ module.exports = {
 			this.PersonalDomains = Types.pArray(oAppDataSection.PersonalDomains, this.PersonalDomains)
 			this.PhoneCountryCodes = Types.pArray(oAppDataSection.PhoneCountryCodes, this.PhoneCountryCodes)
 
+			this.IgnoreHashesListForMobileAppInfo = Types.pArray(oAppDataSection.IgnoreHashesListForMobileAppInfo, this.IgnoreHashesListForMobileAppInfo)
 			this.MailAppIosLink = Types.pString(oAppDataSection.MailAppIosLink, this.MailAppIosLink)
 			this.MailAppAndroidLink = Types.pString(oAppDataSection.MailAppAndroidLink, this.MailAppAndroidLink)
 			this.FilesAppIosLink = Types.pString(oAppDataSection.FilesAppIosLink, this.FilesAppIosLink)

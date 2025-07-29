@@ -24,6 +24,7 @@ use Aurora\System\SettingsProperty;
  * @property array $PhoneCountryCodes
  * @property array $Twilio
  * @property int $RegistrationDataLifetimeHours
+ * @property array $IgnoreHashesListForMobileAppInfo
  * @property string $MailAppIosLink
  * @property string $MailAppAndroidLink
  * @property string $FilesAppIosLink
@@ -154,6 +155,16 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 "",
             ),
+            "IgnoreHashesListForMobileAppInfo" => new SettingsProperty(
+                [
+                    'signup',
+                    'signup/mobile-app',
+                    'user-deletion-request'
+                ],
+                "array",
+                null,
+                "List of hashes to skip when attepmt to display mobile info page",
+            ),
             "MailAppIosLink" => new SettingsProperty(
                 "",
                 "string",
@@ -178,6 +189,7 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 "URL of a link to Unlyme Drive for Android",
             ),
+
         ];
     }
 }

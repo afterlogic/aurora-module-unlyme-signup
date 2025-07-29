@@ -83,6 +83,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             'PersonalDomains' => self::Decorator()->GetPersonalDomains(),
             'PhoneCountryCodes' => $this->oModuleSettings->PhoneCountryCodes,
 
+            'IgnoreHashesListForMobileAppInfo' => $this->oModuleSettings->IgnoreHashesListForMobileAppInfo,
             'MailAppIosLink' => $this->oModuleSettings->MailAppIosLink,
             'MailAppAndroidLink' => $this->oModuleSettings->MailAppAndroidLink,
             'FilesAppIosLink' => $this->oModuleSettings->FilesAppIosLink,
@@ -247,7 +248,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 $query->where('UUID', $RegistrationUUID);
             }
             $registrationBusinessDomain = $query->first();
-            
+
             if ($AccountType === Enums\AccountType::Business && !$registrationBusinessDomain) {
                 return false;
             }
