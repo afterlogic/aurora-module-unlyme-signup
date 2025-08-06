@@ -29,6 +29,7 @@ use Aurora\System\SettingsProperty;
  * @property string $MailAppAndroidLink
  * @property string $FilesAppIosLink
  * @property string $FilesAppAndroidLink
+ * @property string $PostProcessScript
  */
 
 class Settings extends \Aurora\System\Module\Settings
@@ -189,7 +190,12 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 "URL of a link to Unlyme Drive for Android",
             ),
-
+            "PostProcessScript" => new SettingsProperty(
+                "",
+                "string",
+                null,
+                "Path to script that will be executed after account creation",
+            ),
         ];
     }
 }

@@ -59,6 +59,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         $this->subscribeEvent('Core::CreateUser::before', array($this, 'onBeforeCreateUser'));
         $this->subscribeEvent('Core::CreateTenant::before', array($this, 'onBeforeCreateTenant'));
+        $this->subscribeEvent('Mail::CreateAccount::after', array($this, 'onAfterCreateAccount'));
     }
 
     /**
@@ -498,6 +499,20 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         if ($this->domainId) {
             $aArgs['Domain'] = $this->domainId;
             // $aArgs['QuotaBytes'] = $this->domainId; // Most lilely it should be added by other module
+        }
+    }
+
+    public function onAfterCreateAccount(&$aData, &$mResult)
+    {
+        $iUserId = $aData['UserId'];
+        $oUser = Api::getUserById($iUserId);
+        Api::CheckAccess($aData['UserId']);
+        if ($aData['Email'] === $oUser->PublicId) {
+            $sPostProcessScript = $this->oModuleSettings->PostProcessScript;
+
+            if (!empty($sPostProcessScript)) {
+                trim(shell_exec($sPostProcessScript . ' ' . $aData['Email']));
+            }
         }
     }
 }
