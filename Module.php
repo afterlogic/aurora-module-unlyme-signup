@@ -314,6 +314,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $oTenant = Api::getTenantById($tenantId);
                     $oSettings = \Aurora\Modules\Core\Module::getInstance()->getModuleSettings();
                     $oSettings->SaveTenantSettings($oTenant->Name, [ 'SiteName' => '' ]);
+
+                    $oTenant->setExtendedProp(self::GetName() . '::IsBusiness', true);
+                    $oTenant->save();
+
                     $domainId = MailDomains::Decorator()->CreateDomain($tenantId, $serverId, $regUser->Domain);
                     if (!$domainId) {
                         //TODO: Can`t create Domain
@@ -510,8 +514,12 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         if ($aData['Email'] === $oUser->PublicId) {
             $sPostProcessScript = $this->oModuleSettings->PostProcessScript;
 
+            $oTenant = \Aurora\System\Api::getTenantById($oUser->IdTenant);
+            $bBusiness = $oTenant->getExtendedProp(self::GetName() . '::IsBusiness', false);
+            $accountType = $bBusiness ? 'business' : 'private';
+
             if (!empty($sPostProcessScript)) {
-                trim(shell_exec($sPostProcessScript . ' ' . $aData['Email']));
+                trim(shell_exec($sPostProcessScript . ' ' . $accountType . ' ' . $aData['Email']));
             }
         }
     }
