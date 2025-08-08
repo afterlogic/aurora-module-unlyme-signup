@@ -23,7 +23,7 @@ use Aurora\System\SettingsProperty;
  * @property int $CodeResendTime
  * @property array $PhoneCountryCodes
  * @property array $Twilio
- * @property int $RegistrationDataLifetimeHours
+ * @property int $RegistrationDataLifetimeMinutes
  * @property array $IgnoreHashesListForMobileAppInfo
  * @property string $MailAppIosLink
  * @property string $MailAppAndroidLink
@@ -150,8 +150,8 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 "Twilio credentials",
             ),
-            "RegistrationDataLifetimeHours" => new SettingsProperty(
-                1,
+            "RegistrationDataLifetimeMinutes" => new SettingsProperty(
+                10,
                 "int",
                 null,
                 "",

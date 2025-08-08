@@ -16,6 +16,6 @@ if (PHP_SAPI !== 'cli') {
 require_once \dirname(__file__) . "/../../../system/autoload.php";
 \Aurora\System\Api::Init(true);
 
-$periodInHours = Module::getInstance()->getConfig('RegistrationDataLifetimeHours', 1);
-$time = (new \DateTime())->sub(new \DateInterval('PT' . $periodInHours . 'H'));
+$periodInMinutes = Module::getInstance()->getConfig('RegistrationDataLifetimeMinutes', 10);
+$time = (new \DateTime())->sub(new \DateInterval('PT' . $periodInMinutes . 'M'));
 RegistrationUser::where('UpdatedAt', '<', $time)->delete();
