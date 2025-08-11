@@ -168,7 +168,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     $oRegistrationUser->AccountType = $AccountType;
 
                     $bSaveResult = $oRegistrationUser->save();
-                } elseif ($Email && ($oRegistrationUser->Email === $Email || self::Decorator()->VerifyEmail($Email, $AccountType))) { // check email only if it was changed
+                } elseif ($Email && ($oRegistrationUser->Email === $Email || self::Decorator()->VerifyEmail($Email, $AccountType, $oRegistrationUser->UUID))) { // check email only if it was changed
                     $oRegistrationUser->Email = $Email;
                     $oRegistrationUser->AccountType = $AccountType;
                     $oRegistrationUser->Phone = $Phone;
