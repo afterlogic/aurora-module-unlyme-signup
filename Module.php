@@ -149,6 +149,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $bSaveResult = false;
         $bNeedToFinalizeRegistration = false;
 
+        $Domain = strtolower(trim($Domain));
+        $Email = strtolower(trim($Email));
+
         if (empty($Domain) && empty($Email)) {
             throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
         }
