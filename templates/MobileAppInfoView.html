@@ -12,29 +12,65 @@
 				<div class="unlyme-app-item">
 					<div class="app-item-info">
 						<img src="static/styles/images/modules/%ModuleName%/unlyme-mail-app-icon.png" alt="Unlyme Mail">
-						<h3>Unlyme Mail</h3>
+						<h3>
+							Unlyme Mail
+							<span data-bind="visible: !sMailAppIosLink && !sMailAppAndroidLink">(<span data-bind="i18n: {'key': '%MODULENAME%/HINT_SOON'}"></span>)</span>
+						</h3>
 					</div>
 					<div class="store-buttons">
-						<a class="store-button app-store-button" data-bind="attr: {href: sMailAppIosLink}">
+						<!-- ko if: !sMailAppIosLink -->
+						<span class="store-button app-store-button">
+							<img src="static/styles/images/modules/%ModuleName%/app-store-badge.svg" alt="App Store">
+						</span>
+						<!-- /ko -->
+						<!-- ko if: !!sMailAppIosLink -->
+						<a class="store-button app-store-button" target="_blank" data-bind="attr: {href: sMailAppIosLink}">
 							<img src="static/styles/images/modules/%ModuleName%/app-store-badge.svg" alt="App Store">
 						</a>
-						<a class="store-button google-play-button" data-bind="attr: {'href': sMailAppAndroidLink}">
+						<!-- /ko -->
+
+						<!-- ko if: !sMailAppAndroidLink -->
+						<span class="store-button google-play-button">
+							<img src="static/styles/images/modules/%ModuleName%/google-play-badge.svg" alt="Google Play">
+						</span>
+						<!-- /ko -->
+						<!-- ko if: !!sMailAppAndroidLink -->
+						<a class="store-button google-play-button" target="_blank" data-bind="attr: {'href': sMailAppAndroidLink}">
 							<img src="static/styles/images/modules/%ModuleName%/google-play-badge.svg" alt="Google Play">
 						</a>
+						<!-- /ko -->
 					</div>
 				</div>
 				<div class="unlyme-app-item">
 					<div class="app-item-info">
 						<img src="static/styles/images/modules/%ModuleName%/unlyme-drive-app-icon.png" alt="Unlyme Drive">
-						<h3>Unlyme Drive</h3>
+						<h3>
+							Unlyme Drive
+							<span data-bind="visible: !sFilesAppIosLink && !sFilesAppAndroidLink">(<span data-bind="i18n: {'key': '%MODULENAME%/HINT_SOON'}"></span>)</span>
+						</h3>
 					</div>
 					<div class="store-buttons">
-						<a class="store-button app-store-button" data-bind="attr: {href: sFilesAppIosLink}">
+						<!-- ko if: !sFilesAppIosLink -->
+						<span class="store-button app-store-button">
+							<img src="static/styles/images/modules/%ModuleName%/app-store-badge.svg" alt="App Store">
+						</span>
+						<!-- /ko -->
+						<!-- ko if: !!sFilesAppIosLink -->
+						<a class="store-button app-store-button" target="_blank" data-bind="attr: {href: sFilesAppIosLink}">
 							<img src="static/styles/images/modules/%ModuleName%/app-store-badge.svg" alt="App Store">
 						</a>
-						<a class="store-button google-play-button" data-bind="attr: {href: sFilesAppAndroidLink}">
+						<!-- /ko -->
+
+						<!-- ko if: !sFilesAppAndroidLink -->
+						<span class="store-button google-play-button">
+							<img src="static/styles/images/modules/%ModuleName%/google-play-badge.svg" alt="Google Play">
+						</span>
+						<!-- /ko -->
+						<!-- ko if: !!sFilesAppAndroidLink -->
+						<a class="store-button google-play-button" target="_blank" data-bind="attr: {href: sFilesAppAndroidLink},">
 							<img src="static/styles/images/modules/%ModuleName%/google-play-badge.svg" alt="Google Play">
 						</a>
+						<!-- /ko -->
 					</div>
 				</div>
 			</div>
