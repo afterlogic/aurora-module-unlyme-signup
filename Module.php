@@ -524,19 +524,19 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             $sLanguage = strtolower($oUser->Language ?? 'English');
 
             $alanguageCodes = [
-                'en' => 'English',
-                'de' => 'German',
-                'es' => 'Spanish',
-                'fr' => 'French',
-                'it' => 'Italian',
-                'pt' => 'Portuguese'
+                'english' => 'en',
+                'german' => 'de',
+                'spanish' => 'es',
+                'french' => 'fr',
+                'italian' => 'it',
+                'portuguese-portuguese' => 'pt',
+                'portuguese-brasil' => 'pt'
             ];
 
-            $code = array_search($sLanguage, $alanguageCodes);
-            $code = $code ? $code : 'en';
+            $code = $alanguageCodes[$sLanguage] ?? 'en';
 
             if (!empty($sPostProcessScript)) {
-                trim(shell_exec($sPostProcessScript . ' ' . $sAccountType . ' ' . $aData['Email']) . ' ' . $code);
+                trim(shell_exec($sPostProcessScript . ' ' . $sAccountType . ' ' . $aData['Email'] . ' ' . $code));
             }
         }
     }
