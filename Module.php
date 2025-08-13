@@ -519,10 +519,12 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
             $oTenant = \Aurora\System\Api::getTenantById($oUser->IdTenant);
             $bBusiness = $oTenant->getExtendedProp(self::GetName() . '::IsBusiness', false);
-            $accountType = $bBusiness ? 'business' : 'private';
+            $sAccountType = $bBusiness ? 'business' : 'private';
+
+            $sLanguage = strtolower($oUser->Language ?? 'English');
 
             if (!empty($sPostProcessScript)) {
-                trim(shell_exec($sPostProcessScript . ' ' . $accountType . ' ' . $aData['Email']));
+                trim(shell_exec($sPostProcessScript . ' ' . $sAccountType . ' ' . $aData['Email']) . ' ' . $sLanguage);
             }
         }
     }
