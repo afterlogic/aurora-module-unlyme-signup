@@ -11,7 +11,7 @@ var
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	
-	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
+	Ajax = require('modules/%ModuleName%/js/Ajax.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	CAbstractScreenView = require('%PathToCoreWebclientModule%/js/views/CAbstractScreenView.js'),
 	UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
@@ -20,6 +20,30 @@ var
 	
 	$html = $('html')
 ;
+
+// Кастомный debounce extender для Knockout
+ko.extenders.debounce = function(target, timeout) {
+	var timeoutId = null;
+	
+	var debouncedValue = ko.computed({
+		read: function() {
+			return target();
+		},
+		write: function(value) {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+			
+			timeoutId = setTimeout(function() {
+				target(value);
+			}, timeout);
+		}
+	});
+	
+	debouncedValue.original = target;
+	
+	return debouncedValue;
+};
 
 /**
  * @constructor
@@ -36,10 +60,10 @@ function CSignupView()
 	
 	this.registrationUUID = ko.observable('')
 	this.accountType = ko.observable(Enums.UnlymeAccountType.Personal)
-	this.username = ko.observable('').extend({ rateLimit: 500, method: "notifyWhenChangesStop" })
+	this.username = ko.observable('').extend({ debounce: 500 })
 	this.password = ko.observable('')
 	this.passwordRepeat = ko.observable('')
-	this.domain = ko.observable('').extend({ rateLimit: 500, method: "notifyWhenChangesStop" })
+	this.domain = ko.observable('').extend({ debounce: 500 })
 	this.code = ko.observable('')
 	this.phone = ko.observable('')
 
@@ -187,11 +211,11 @@ CSignupView.prototype.init = function ()
 	}, this)
 
 	// reset errors on change input values
-	this.username.subscribe(function () {
+	this.username.original.subscribe(function () {
 		this.usernameBadError(false)
 		this.usernameExistError(false)
 	}, this)
-	this.domain.subscribe(function () {
+	this.domain.original.subscribe(function () {
 		this.domainBadError(false)
 		this.domainError(false)
 	}, this)
@@ -264,7 +288,7 @@ CSignupView.prototype.onRoute = function (aParams)
 CSignupView.prototype.onShow = function ()
 {
 	_.delay(_.bind(function(){
-		if (this.username() === '') {
+		if (this.username.original() === '') {
 			this.usernameFocus(true)
 		}
 	},this), 1)
@@ -304,7 +328,7 @@ CSignupView.prototype.validateEmail = function ()
 {
 	let valid = true
 
-	if (this.username().length === 0) {
+	if (this.username.original().length === 0) {
 		this.usernameFocus(true)
 		valid = false
 	}
@@ -344,14 +368,14 @@ CSignupView.prototype.validateDomain = function (silentMode = false)
 {
 	let valid = false
 
-	if (this.domain().length === 0 || this.domain().indexOf('.') <= 0) {
+	if (this.domain.original().length === 0 || this.domain.original().indexOf('.') <= 0) {
 		this.domainFocus(true)
 		if (!silentMode) {
 			this.domainBadError(true)
 		}
 	} else {
 		const regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/
-		valid = regex.test(this.domain())
+		valid = regex.test(this.domain.original())
 		
 		if (!valid) {
 			if (!silentMode) {
@@ -449,13 +473,13 @@ CSignupView.prototype.registerDomain = function ()
 		this.registerDomainTimer = null
 	}
 
-	if (this.domain().length === 0) {
+	if (this.domain.original().length === 0) {
 		this.domainFocus(true)
 	} else if (this.validateDomain()) {
 		const oParameters = {
 			'UUID': this.registrationUUID(),
 			'AccountType': Types.pInt(this.accountType()),
-			'Domain': this.domain(),
+			'Domain': this.domain.original(),
 			'Language': $.cookie('aurora-selected-lang') || '',
 		}
 		const oEventParameters = { Module: '%ModuleName%', Parameters: oParameters, Reject: false }
@@ -599,10 +623,10 @@ CSignupView.prototype.getEmail = function ()
 	if (this.accountType() == Enums.UnlymeAccountType.Personal) {
 		sDomain = this.domains().length > 1 ? this.selectedDomain() : this.domains()[0]
 	} else {
-		sDomain = '@' + this.domain().trim()
+		sDomain = '@' + this.domain.original().trim()
 	}
 
-	return this.username().trim() + sDomain
+	return this.username.original().trim() + sDomain
 }
 
 /**
