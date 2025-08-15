@@ -11,8 +11,7 @@ var
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	
-	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
-	// Ajax = require('modules/%ModuleName%/js/Ajax.js'),
+	Ajax = require('modules/%ModuleName%/js/Ajax.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	CAbstractScreenView = require('%PathToCoreWebclientModule%/js/views/CAbstractScreenView.js'),
 	UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
@@ -229,12 +228,12 @@ CSignupView.prototype.init = function ()
 	}, this)
 
 	this.email.subscribe(function (sEmail) {
+		this.emailApproved(false)
 		if (this.emailTimeoutId()) {
 			clearTimeout(this.emailTimeoutId());
 		}
 		this.emailTimeoutId(setTimeout(_.bind(function() {
 			if (this.username().length >= 3) {
-				this.emailApproved(false)
 				Ajax.send('%ModuleName%', 'VerifyEmail', {'Email': sEmail, 'AccountType': Types.pInt(this.accountType()), 'RegistrationUUID': this.registrationUUID()}, function (oResponse, oRequest) {
 					this.emailApproved(oResponse?.Result ? true : false)
 
@@ -242,27 +241,23 @@ CSignupView.prototype.init = function ()
 						this.usernameExistError(true)
 					}
 				}, this)
-			} else {
-				this.emailApproved(false)
 			}
 		}, this), 500));
 	}, this)
 
 	this.domain.subscribe(function (v) {
+		this.businessDomainApproved(false)
 		if (this.domainTimeoutId()) {
 			clearTimeout(this.domainTimeoutId());
 		}
 		
 		this.domainTimeoutId(setTimeout(_.bind(function() {
 			if (this.validateDomain(true)) {
-				this.businessDomainApproved(false)
 				Ajax.send('%ModuleName%', 'VerifyDomain', {'Domain': v}, function (oResponse, oRequest) {
 					this.businessDomainApproved(oResponse?.Result ? true : false)
 	
 					this.domainError(!oResponse?.Result)
 				}, this)
-			} else {
-				this.businessDomainApproved(false)
 			}
 		}, this), 500));
 	}, this)
