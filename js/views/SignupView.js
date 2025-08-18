@@ -536,6 +536,7 @@ CSignupView.prototype.registerAccount = function ()
 			// 'Phone': this.phone(),
 			'Language': $.cookie('aurora-selected-lang') || '',
 			'Timezone': moment.tz.guess(),
+			'DoLogin': !this.mobileApp(), // auto login after registration is only for web app
 		}
 		const oEventParameters = { Module: '%ModuleName%', Parameters: oParameters, Reject: false }
 		

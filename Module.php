@@ -142,7 +142,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
      * @param string $UUID
      * @return bool
      */
-    public function Register($Domain = '', $AccountType = Enums\AccountType::Personal, $Phone = '', $Email = '', $Login = '', $Password = '', $Language = '', $Timezone = '', $UUID = '')
+    public function Register($Domain = '', $AccountType = Enums\AccountType::Personal, $Phone = '', $Email = '', $Login = '', $Password = '', $Language = '', $Timezone = '', $UUID = '', $DoLogin = false)
     {
         $mResult = false;
         $oRegistrationUser = null;
@@ -201,7 +201,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 if ($bNeedToFinalizeRegistration) {
                     // $this->sendCode($oRegistrationUser);
                     // temporarily override Register response to return AuthToken
-                    $mResult = self::Decorator()->ConfirmRegistration($mResult);
+                    $mResult = self::Decorator()->ConfirmRegistration($mResult, !!$DoLogin);
                 }
             }
         }
@@ -297,7 +297,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
      * @return bool
      */
     // public function ConfirmRegistration($UUID, $Code)
-    public function ConfirmRegistration($UUID)
+    public function ConfirmRegistration($UUID, $DoLogin = false)
     {
         $mResult = false;
 
@@ -394,7 +394,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             \Aurora\Api::skipCheckUserRole($prevState);
 
             // Authenticated if user is created
-            if ($mResult) {
+            if ($mResult && !!$DoLogin) {
                 $mResult = Core::Decorator()->Login(
                     $regUser->Email,
                     $regUser->Password
