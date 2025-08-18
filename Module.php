@@ -465,8 +465,6 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 ]);
 
             $mResult = $verification_check && $verification_check->status === 'approved';
-        } elseif ($Code === '123456') {
-            $mResult = true;
         }
 
         return $mResult;
