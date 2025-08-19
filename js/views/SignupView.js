@@ -33,6 +33,8 @@ function CSignupView()
 	this.sCustomLogoUrl = Settings.CustomLogoUrl
 	this.sBottomInfoHtmlText = Settings.BottomInfoHtmlText
 	this.versionText = TextUtils.i18n('%MODULENAME%/VERSION_LABEL', { VERSION: '1.0' })
+	this.domainTimeoutId = null
+	this.emailTimeoutId = null
 	
 	this.registrationUUID = ko.observable('')
 	this.accountType = ko.observable(Enums.UnlymeAccountType.Personal)
@@ -40,8 +42,6 @@ function CSignupView()
 	this.password = ko.observable('')
 	this.passwordRepeat = ko.observable('')
 	this.domain = ko.observable('')
-	this.domainTimeoutId = ko.observable(null)
-	this.emailTimeoutId = ko.observable(null)
 	this.code = ko.observable('')
 	this.phone = ko.observable('')
 
@@ -229,10 +229,10 @@ CSignupView.prototype.init = function ()
 
 	this.email.subscribe(function (sEmail) {
 		this.emailApproved(false)
-		if (this.emailTimeoutId()) {
-			clearTimeout(this.emailTimeoutId());
+		if (this.emailTimeoutId) {
+			clearTimeout(this.emailTimeoutId);
 		}
-		this.emailTimeoutId(setTimeout(_.bind(function() {
+		this.emailTimeoutId = setTimeout(_.bind(function() {
 			if (this.username().length >= 3) {
 				Ajax.send('%ModuleName%', 'VerifyEmail', {'Email': sEmail, 'AccountType': Types.pInt(this.accountType()), 'RegistrationUUID': this.registrationUUID()}, function (oResponse, oRequest) {
 					this.emailApproved(oResponse?.Result ? true : false)
@@ -242,16 +242,16 @@ CSignupView.prototype.init = function ()
 					}
 				}, this)
 			}
-		}, this), 500));
+		}, this), 500);
 	}, this)
 
 	this.domain.subscribe(function (v) {
 		this.businessDomainApproved(false)
-		if (this.domainTimeoutId()) {
-			clearTimeout(this.domainTimeoutId());
+		if (this.domainTimeoutId) {
+			clearTimeout(this.domainTimeoutId);
 		}
 		
-		this.domainTimeoutId(setTimeout(_.bind(function() {
+		this.domainTimeoutId = setTimeout(_.bind(function() {
 			if (this.validateDomain(true)) {
 				Ajax.send('%ModuleName%', 'VerifyDomain', {'Domain': v}, function (oResponse, oRequest) {
 					this.businessDomainApproved(oResponse?.Result ? true : false)
@@ -259,7 +259,7 @@ CSignupView.prototype.init = function ()
 					this.domainError(!oResponse?.Result)
 				}, this)
 			}
-		}, this), 500));
+		}, this), 500);
 	}, this)
 }
 
