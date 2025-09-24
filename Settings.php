@@ -30,6 +30,7 @@ use Aurora\System\SettingsProperty;
  * @property string $FilesAppIosLink
  * @property string $FilesAppAndroidLink
  * @property string $PostProcessScript
+ * @property int $MaxLoginLength
  */
 
 class Settings extends \Aurora\System\Module\Settings
@@ -195,6 +196,12 @@ class Settings extends \Aurora\System\Module\Settings
                 "string",
                 null,
                 "Path to script that will be executed after account creation",
+            ),
+            "MaxLoginLength" => new SettingsProperty(
+                0,
+                "int",
+                null,
+                "Maximum allowed number of characters in a user login (0 means no limit)",
             ),
         ];
     }

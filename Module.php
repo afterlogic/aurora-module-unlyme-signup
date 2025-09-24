@@ -89,6 +89,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             'MailAppAndroidLink' => $this->oModuleSettings->MailAppAndroidLink,
             'FilesAppIosLink' => $this->oModuleSettings->FilesAppIosLink,
             'FilesAppAndroidLink' => $this->oModuleSettings->FilesAppAndroidLink,
+            'MaxLoginLength' => $this->oModuleSettings->MaxLoginLength,
         );
     }
 
@@ -155,6 +156,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         if (empty($Domain) && empty($Email)) {
             throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
         }
+
+        $this->validateMaxLoginLength([
+            \Aurora\System\Utils::GetAccountNameFromEmail($Email),
+            $Login,
+        ]);
 
         $oRegistrationUser = $UUID ? Models\RegistrationUser::where('UUID', $UUID)->first() : new Models\RegistrationUser();
 
@@ -244,6 +250,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $mResult = false;
 
         if (!empty($Email)) {
+
+            $this->validateMaxLoginLength([
+                \Aurora\System\Utils::GetAccountNameFromEmail($Email),
+            ]);
 
             $sDomainName = \MailSo\Base\Utils::GetDomainFromEmail($Email);
 
@@ -486,6 +496,20 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     protected function getDefaultTenant()
     {
         return \Aurora\Modules\Core\Models\Tenant::where('Properties->UnlymeBilling::IsBusiness', null)->orWhere('Properties->UnlymeBilling::IsBusiness', false)->first();
+    }
+
+    protected function validateMaxLoginLength(array $aLogins)
+    {
+        $iMaxLoginLength = $this->getConfig('MaxLoginLength', 0);
+        if ($iMaxLoginLength > 0) {
+            foreach ($aLogins as $login) {
+                if (strlen($login) > $iMaxLoginLength) {
+                    throw new \Aurora\System\Exceptions\ApiException(Enums\ErrorCodes::LoginTooLong);
+                }
+            }
+        } else {
+            // 0 means no restriction on email length
+        }
     }
 
     public function onBeforeCreateTenant(&$aArgs, &$mResult)
