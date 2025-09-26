@@ -7,6 +7,7 @@ var
 	moment = require('moment-timezone'),
 	IMask = require('imask'),
 	
+	Routing = require('%PathToCoreWebclientModule%/js/Routing.js'),
 	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
@@ -277,6 +278,11 @@ CSignupView.prototype.init = function ()
 CSignupView.prototype.onRoute = function (aParams)
 {
 	this.mobileApp(aParams && aParams.indexOf('mobile-app') !== -1)
+	if (this.accountType() == Enums.UnlymeAccountType.Personal) {
+		this.personalAccountAccepted(aParams && aParams.indexOf(Settings.HashSignupFormCompleted) !== -1)
+	} else if (this.accountType() == Enums.UnlymeAccountType.Business) {
+		this.businessAccountAccepted(aParams && aParams.indexOf(Settings.HashSignupFormCompleted) !== -1)
+	}
 }
 CSignupView.prototype.onShow = function ()
 {
@@ -563,17 +569,25 @@ CSignupView.prototype.registerAccount = function ()
 			this.loading(false)
 
 			if (oResponse?.Result) {
-				this.registrationUUID(oResponse?.Result)
+				// this.registrationUUID(oResponse?.Result)
 				// this.setTimer()
 
 				if (!this.mobileApp()) {
 					this.resetForm()
 					window.location.reload()
 				} else {
-					if (oParameters.AccountType == Enums.UnlymeAccountType.Personal) {
-						this.personalAccountAccepted(true)
-					} else if (oParameters.AccountType == Enums.UnlymeAccountType.Business) {
-						this.businessAccountAccepted(true)
+					// if (oParameters.AccountType == Enums.UnlymeAccountType.Personal) {
+					// 	this.personalAccountAccepted(true)
+					// } else if (oParameters.AccountType == Enums.UnlymeAccountType.Business) {
+					// 	this.businessAccountAccepted(true)
+					// }
+					
+					if (oParameters.AccountType == Enums.UnlymeAccountType.Personal ||
+						oParameters.AccountType == Enums.UnlymeAccountType.Business)
+					{
+						const aCurrentHash = Routing.getCurrentHashArray()
+						aCurrentHash.push(Settings.HashSignupFormCompleted)
+						Routing.replaceHash(aCurrentHash)
 					}
 				}
 			}

@@ -10,6 +10,7 @@ module.exports = {
 	ServerModuleName: '%ModuleName%',
 	HashSigninForm: '%ModuleName%-signin',
 	HashSignupForm: '%ModuleName%-signup',
+	HashSignupFormCompleted: 'completed',
 	HashMobileInfo: 'mobile-app-info',
 	IgnoreHashesListForMobileAppInfo: [],
 	

@@ -161,6 +161,7 @@ class Settings extends \Aurora\System\Module\Settings
                 [
                     'signup',
                     'signup/mobile-app',
+                    'signup/mobile-app/completed',
                     'user-deletion-request'
                 ],
                 "array",
