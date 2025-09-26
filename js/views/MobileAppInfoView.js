@@ -54,6 +54,14 @@ CMobileAppInfoView.prototype.ViewConstructorName = 'CMobileAppInfoView'
 CMobileAppInfoView.prototype.onBind = function ()
 {
 	$html.addClass('non-adjustable-valign')
+
+	// Fix double tap issue in dropdowns on touch-devices
+	document.querySelectorAll('.dropdown .dropdown_content .item').forEach(btn => {
+		btn.addEventListener('touchend', e => {
+			e.preventDefault()
+			btn.click()
+		})
+	})
 }
 
 /**
