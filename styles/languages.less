@@ -11,59 +11,19 @@
 	}
 
 	.custom_selector {
-		// .control .icon {
-		// 	color: #000;
-			
-		// 	&:before {
-		// 		font-size: 18px;
-		// 	}
-		// }
-		
-		// .register & .name {
-		// 	display: inline-block;
-		// 	height: 15px;
-		// }
 		
 		.dropdown_arrow {
-			// float: right;
 			margin-right: 22px;
 			border-bottom-color: #fff;
-			
-			// html.rtl & {
-				//float: right;
-				//margin-right: 22px;
-			// }
 		}
 		
-		// .dropdown_content {
-		// 	padding: 0px;
-		// 	width: 105%;
-			
-		// 	.register & {
-		// 		position: relative;
-		// 	}
-		// }
-		
-		//&.right .dropdown_arrow {
-		//	float: right;
-		//	margin-right: 23px;
-		//}
 		
 		.item  {
-			// border-bottom: 1px solid #CBC8C0;
 			color: #4d4d4d;
-			cursor: pointer;
+			// cursor: pointer;
 			display: block;
 			padding: 8px 12px;
 			white-space: nowrap;
-			
-			// &.selected  {
-			// 	background: #f0f0f0;
-			// }
-			
-			// &:hover  {
-			// 	background: #fafafa;
-			// }
 		}
 	}
 	
@@ -123,64 +83,4 @@
 	.Vietnamese .icon { background-position: -440px -520px; }
 	.Slovenian .icon { background-position: -480px -520px; }
 	.Slovak .icon { background-position: -520px -520px; }
-
-	&.demo {
-		background: #9EE6D4;
-		border: 1px solid #C7CCCF;
-		border-radius: 4px;
-		clear: both;
-		left: auto;
-		margin-left: -172px;
-		margin-top: 20px;
-		padding: 10px 14px;
-		position: relative !important;
-		right: auto;
-		text-align: left;
-		top: 20px;
-		width: 590px;
-		
-		html.rtl & {
-			margin-left: 0;
-			margin-right: -172px;
-			text-align: right;
-		}
-		
-		.gradient(#9EE6D4, #C1CDB8,  #9EE6D4);
-		
-		.langs_heading {
-			color: #464646;
-			font-size: 12pt;
-			margin-bottom: 10px;
-			text-align: center;
-		}
-		
-		.item {
-			color: #555555;
-			display: inline-block;
-			width: 24%;
-			
-			.item_content {
-				border-radius: 3px;
-				cursor: pointer;
-				display: inline-block;
-				padding: 3px 6px;
-				white-space: nowrap;
-
-				&:hover {
-					background-color: #67C0B7;
-					color: #333333;
-				}
-				
-				.text  {
-					display: inline-block;
-					vertical-align: middle;
-				}
-			}
-			
-			&.selected .item_content {
-				background: #2993A2;
-				color: #fff;
-			}
-		}
-	}
 }
