@@ -15,11 +15,15 @@ namespace Aurora\Modules\UnlymeSignup\Enums;
 class ErrorCodes
 {
     public const LoginTooLong = 1001;
+    public const InvalidDomain = 1002;
+    public const ForbiddenEmail = 1003;
 
     /**
      * @var array
      */
     protected $aConsts = [
         'LoginTooLong' => self::LoginTooLong,
+        'InvalidDomain' => self::InvalidDomain,
+        'ForbiddenEmail' => self::ForbiddenEmail,
     ];
 }

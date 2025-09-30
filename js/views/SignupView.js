@@ -63,8 +63,8 @@ function CSignupView()
 	this.domainBadError = ko.observable(false)
 	this.passwordError = ko.observable(false)
 	this.passwordRepeatError = ko.observable(false)
-	this.usernameExistError = ko.observable(false)
-	this.usernameBadError = ko.observable(false)
+	this.emailValidationError = ko.observable(null)
+	this.emailValidationErrorText = ko.observable('')
 	this.codeError = ko.observable(false)
 
 	this.loading = ko.observable(false)
@@ -134,7 +134,7 @@ function CSignupView()
 	}, this)
 
 	this.canRegisterAccount = ko.computed(function () {
-		return this.notloading() && !this.usernameExistError() && !this.usernameBadError()
+		return this.notloading() && !this.emailValidationError()
 	}, this);
 	this.registerAccountCommand = Utils.createCommand(this, this.registerAccount, this.canRegisterAccount)
 
@@ -199,8 +199,8 @@ CSignupView.prototype.init = function ()
 
 	// reset errors on change input values
 	this.username.subscribe(function () {
-		this.usernameBadError(false)
-		this.usernameExistError(false)
+		this.emailValidationError(null)
+		this.emailValidationErrorText('')
 	}, this)
 	this.domain.subscribe(function () {
 		this.domainBadError(false)
@@ -246,8 +246,12 @@ CSignupView.prototype.init = function ()
 				Ajax.send('%ModuleName%', 'VerifyEmail', {'Email': sEmail, 'AccountType': Types.pInt(this.accountType()), 'RegistrationUUID': this.registrationUUID()}, function (oResponse, oRequest) {
 					this.emailApproved(oResponse?.Result ? true : false)
 
-					if (!oResponse?.Result) {
-						this.usernameExistError(true)
+					if (oResponse?.ErrorCode) {
+						this.emailValidationError(oResponse.ErrorCode)
+						this.emailValidationErrorText(this.getErrorMessageByCode(oResponse.ErrorCode))
+					} else if (!oResponse?.Result) {
+						this.emailValidationError(Enums.ErrorCodes.ForbiddenEmail)
+						this.emailValidationErrorText(this.getErrorMessageByCode(Enums.ErrorCodes.ForbiddenEmail))
 					}
 				}, this)
 			}
@@ -272,6 +276,18 @@ CSignupView.prototype.init = function ()
 	}, this)
 }
 
+CSignupView.prototype.getErrorMessageByCode = function (iCode) {
+	switch (iCode) {
+		case Enums.ErrorCodes.LoginTooLong:
+			return TextUtils.i18n('%MODULENAME%/ERROR_EMAIL_IS_TOO_LONG', { LIMIT: Settings.MaxLoginLength })
+		case Enums.ErrorCodes.InvalidDomain:
+			return TextUtils.i18n('%MODULENAME%/ERROR_DOMAIN_INVALID')
+		case Enums.ErrorCodes.ForbiddenEmail:
+			return TextUtils.i18n('%MODULENAME%/ERROR_EMAIL_ACCOUNT_FORBIDDEN')
+		default:
+			return TextUtils.i18n('%MODULENAME%/ERROR_EMAIL_ACCOUNT_FORBIDDEN')
+	}	
+}
 /**
  * Focuses login input after view showing.
  */
@@ -330,18 +346,6 @@ CSignupView.prototype.validateEmail = function ()
 	if (this.username().length === 0) {
 		this.usernameFocus(true)
 		valid = false
-	}
-
-	if (this.accountType() == Enums.UnlymeAccountType.Personal) {
-		// if (this.getEmail().indexOf('test') >= 0) {
-		// 	valid = false
-		// 	this.usernameExistError(!valid)
-		// }
-	}
-
-	if (this.getEmail().indexOf('bad') >= 0) {
-		valid = false
-		this.usernameBadError(!valid)
 	}
 
 	return valid
@@ -568,7 +572,14 @@ CSignupView.prototype.registerAccount = function ()
 		Ajax.send('%ModuleName%', 'Register', oParameters, function (oResponse) {
 			this.loading(false)
 
-			if (oResponse?.Result) {
+
+			if (oResponse?.ErrorCode) {
+				this.emailValidationError(oResponse.ErrorCode)
+				this.emailValidationErrorText(this.getErrorMessageByCode(oResponse.ErrorCode))
+			} else if (!oResponse?.Result) {
+				this.emailValidationError(Enums.ErrorCodes.ForbiddenEmail)
+				this.emailValidationErrorText(this.getErrorMessageByCode(Enums.ErrorCodes.ForbiddenEmail))
+			} else if (oResponse?.Result) {
 				// this.registrationUUID(oResponse?.Result)
 				// this.setTimer()
 

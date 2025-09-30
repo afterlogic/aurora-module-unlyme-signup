@@ -264,13 +264,13 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             $registrationBusinessDomain = $query->first();
 
             if ($AccountType === Enums\AccountType::Business && !$registrationBusinessDomain) {
-                return false;
+                throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
             }
 
             if ($AccountType === Enums\AccountType::Personal) {
 
                 if ($registrationBusinessDomain) {
-                    return false;
+                    throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
                 } else {
                     // check if domain exists in Default tenant
                     // if not, then it is not allowed to register with this email
@@ -281,11 +281,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                         // if domain exists in Default tenant, then it is allowed to register with this email
                         // if not, then it is not allowed to register with this email
                         if (!$domain) {
-                            return false;
+                            throw new \Aurora\System\Exceptions\ApiException(Enums\ErrorCodes::InvalidDomain);
                         }
                     } else {
                         // no default tenant, so it is not allowed to register with this email
-                        return false;
+                        throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UnknownError);
                     }
                 }
             }
@@ -294,6 +294,8 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             $registrationEmail = Models\RegistrationUser::where('Email', $Email)->first();
             if (!$account && !$registrationEmail) {
                 $mResult = true;
+            } else {
+                throw new \Aurora\System\Exceptions\ApiException(Enums\ErrorCodes::ForbiddenEmail);
             }
         }
 

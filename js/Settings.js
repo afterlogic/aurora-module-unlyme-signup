@@ -29,6 +29,8 @@ module.exports = {
 	MailAppAndroidLink: '',
 	FilesAppIosLink: '',
 	FilesAppAndroidLink: '',
+
+	MaxLoginLength: 50,
 	
 	/**
 	 * Initializes settings from AppData object sections.
@@ -62,6 +64,8 @@ module.exports = {
 			this.MailAppAndroidLink = Types.pString(oAppDataSection.MailAppAndroidLink, this.MailAppAndroidLink)
 			this.FilesAppIosLink = Types.pString(oAppDataSection.FilesAppIosLink, this.FilesAppIosLink)
 			this.FilesAppAndroidLink = Types.pString(oAppDataSection.FilesAppAndroidLink, this.FilesAppAndroidLink)
+
+			this.MaxLoginLength = Types.pInt(oAppDataSection.MaxLoginLength, this.MaxLoginLength)
 		}
 		
 		if (!_.isEmpty(oAppDataBrandingWebclientSection))

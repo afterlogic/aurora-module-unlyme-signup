@@ -27,6 +27,12 @@ Enums.SignupScreen = {
 	'Completed': 4,
 }
 
+Enums.ErrorCodes = {
+	'LoginTooLong': 1001,
+	'InvalidDomain': 1002,
+	'ForbiddenEmail': 1003,
+}
+
 if (typeof window.Enums === 'undefined')
 {
 	window.Enums = {}
