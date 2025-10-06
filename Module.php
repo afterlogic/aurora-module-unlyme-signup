@@ -290,7 +290,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 }
             }
 
-            $account = Mail::Decorator()->getAccountsManager()->getAccountUsedToAuthorize($Email);
+            $account = Mail::Decorator()->getAccountsManager()->getAccountUsedToAuthorize($Email, null);
             $registrationEmail = Models\RegistrationUser::where('Email', $Email)->first();
             if (!$account && !$registrationEmail) {
                 $mResult = true;
